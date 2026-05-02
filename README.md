@@ -35,9 +35,10 @@ docker compose up --build
 This will:
 1. Start a PostgreSQL 16 container
 2. Build the backend image
-3. Run `alembic upgrade head` on startup
-4. Seed the 3 initial products (najd-clear, najd-align, najd-rest)
-5. Start the API on http://localhost:8000
+3. Seed the 3 initial products (najd-clear, najd-align, najd-rest) *(requires schema already applied — run migrations manually first, see below)*
+4. Start the API on http://localhost:8000
+
+Apply the schema once before first run, e.g. `docker compose run --rm backend alembic upgrade head` *(or another container with the same `DATABASE_URL`)*.
 
 ### 3. Verify
 
@@ -93,7 +94,7 @@ Tests are unit-only and do not require a running database.
 
 ## Database Migrations
 
-Migrations live in `alembic/versions/`. The `entrypoint.sh` runs `alembic upgrade head` automatically on every container start, making deployments safe.
+Migrations live in `alembic/versions/`. They are **not** run automatically on container start — run `alembic upgrade head` yourself (local shell, one-off job, CI, or Easypanel script) whenever you deploy schema changes.
 
 ### Create a new migration
 
@@ -167,7 +168,7 @@ Prices are always recalculated server-side from `offer_qty` — the `price_sar` 
 5. Add a **PostgreSQL** service and copy the connection string.
 6. Set all environment variables from `.env.example` in the Easypanel environment editor.
 7. Set `DATABASE_URL` to point at the Easypanel Postgres service.
-8. Deploy — `alembic upgrade head` runs automatically on each deploy via `entrypoint.sh`.
+8. Deploy the app, then run **`alembic upgrade head`** when needed (Easypanel **Script** / one-off task, or your DB pipeline) — it is no longer part of the container start command.
 
 ### Health check
 
