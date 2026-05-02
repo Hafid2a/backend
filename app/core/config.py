@@ -1,5 +1,7 @@
 from pydantic_settings import BaseSettings
+from pydantic import model_validator
 from typing import List
+from urllib.parse import quote_plus
 
 
 class Settings(BaseSettings):
@@ -8,6 +10,9 @@ class Settings(BaseSettings):
     FRONTEND_BASE_URL: str = "http://localhost:3000"
 
     DATABASE_URL: str = "postgresql+asyncpg://najd:localdev@localhost:5432/najd"
+    # Substituted into DATABASE_URL when that string contains "${DB_PASSWORD}"
+    # (Docker Compose substitutes this in YAML; Easypanel / plain .env do not).
+    DB_PASSWORD: str = ""
 
     CORS_ORIGINS: str = "http://localhost:3000"
 
@@ -38,6 +43,21 @@ class Settings(BaseSettings):
     GEO_ORDER_BYPASS_PHONES: str = "643281895"
 
     LOG_LEVEL: str = "INFO"
+
+    @model_validator(mode="after")
+    def interpolate_database_password(self) -> "Settings":
+        marker = "${DB_PASSWORD}"
+        if marker not in self.DATABASE_URL:
+            return self
+        if not self.DB_PASSWORD:
+            raise ValueError(
+                "DB_PASSWORD is required when DATABASE_URL contains "
+                f"{marker!r}; set Easypanel/Postgres user password "
+                "(or paste a full DATABASE_URL without placeholders)."
+            )
+        interpolated = self.DATABASE_URL.replace(marker, quote_plus(self.DB_PASSWORD))
+        object.__setattr__(self, "DATABASE_URL", interpolated)
+        return self
 
     @property
     def cors_origins_list(self) -> List[str]:
