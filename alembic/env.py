@@ -35,8 +35,12 @@ def do_run_migrations(connection) -> None:
 
 
 async def run_async_migrations() -> None:
+    # Ensure URL is always from app settings: get_section()+alembic.ini can leave
+    # sqlalchemy.url blank on some hosts, which breaks online upgrades quietly.
+    configuration = dict(config.get_section(config.config_ini_section, {}) or {})
+    configuration["sqlalchemy.url"] = settings.DATABASE_URL
     connectable = async_engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        configuration,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
