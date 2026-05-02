@@ -173,6 +173,22 @@ Prices are always recalculated server-side from `offer_qty` — the `price_sar` 
 
 Configure the health check path to `/health` with a 30-second interval.
 
+### Latest commit not updating?
+
+Easypanel chooses the Git revision when **a deploy runs**; repo files cannot “force” SHA by themselves.
+
+| Check | Action |
+|-------|--------|
+| Builder | Prefer **Dockerfile** in the service build settings (matches this repo). You can use **Nixpacks** if `Procfile` / `nixpacks.toml` stay on `main`. |
+| Source | Branch must be **`main`**, not a pinned tag or old release. |
+| Environment | Remove a **manually added `GIT_SHA`** variable if you added one; it can lock logs to an old hash. |
+| Webhook / Auto Deploy | Turn on **Auto Deploy** (GitHub PAT with webhooks scope) or POST the service **Deploy Webhook** URL once per release. |
+| GitHub Actions | This repo has `.github/workflows/easypanel-deploy-hook.yml`: add secret **`EASYPANEL_DEPLOY_WEBHOOK`** (the panel’s deploy URL) so each push to `main` can trigger a new deploy. If the secret is unset, the workflow does nothing. |
+
+### MaxMind credentials
+
+`MAXMIND_ACCOUNT_ID` / `MAXMIND_LICENSE_KEY` are read from env (see `.env.example`). If a key was exposed, rotate it in [MaxMind Manage License Keys](https://www.maxmind.com/en/accounts/current/license-key) (generate a new key, update Easypanel, verify, then deactivate the old key)—see [Replace my License Key](https://support.maxmind.com/hc/en-us/articles/4407111761435-Replace-my-License-Key).
+
 ---
 
 ## Google Sheets Webhook
