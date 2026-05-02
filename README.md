@@ -160,8 +160,10 @@ Prices are always recalculated server-side from `offer_qty` — the `price_sar` 
 
 1. Push your code to a Git repository.
 2. In Easypanel, create a new **App** and connect to your repo.
-3. Set **Build command**: _(none, uses Dockerfile)_
-4. Set **Start command**: _(uses Dockerfile CMD)_
+   - **If the build uses Nixpacks**, deploy from **latest `main`** (this repo includes `Procfile` and `nixpacks.toml`). If the build log’s `GIT_SHA` is **not** the current tip of `main` on GitHub, Easypanel is still pulling an **old** archive—open **Source**, branch `main`, redeploy; or use **Dockerfile** build instead.
+   - **If the build uses Dockerfile** (recommended if Nixpacks misbehaves), use the repo root `Dockerfile`; **Build** / **Start** commands are taken from the image.
+3. Set **Build command**: _(none when using Dockerfile image)_
+4. Set **Start command**: _(none when using Dockerfile; image `CMD` runs Uvicorn via `entrypoint.sh`)_
 5. Add a **PostgreSQL** service and copy the connection string.
 6. Set all environment variables from `.env.example` in the Easypanel environment editor.
 7. Set `DATABASE_URL` to point at the Easypanel Postgres service.
