@@ -94,6 +94,8 @@ class CreateOrderResponse(BaseModel):
     total_sar: int
     status: str
     upsell: Optional[UpsellItemOut] = None
+    # True when phone is in GEO_ORDER_BYPASS_PHONES (test / ops — not sent to Sheet or CAPI)
+    is_test_order: bool = False
 
 
 class OrderDetailResponse(BaseModel):
@@ -106,6 +108,7 @@ class OrderDetailResponse(BaseModel):
     currency: str
     items: List[OrderItemOut] = []
     created_at: str
+    is_test_order: bool = False
 
 
 class UpsellRequest(BaseModel):

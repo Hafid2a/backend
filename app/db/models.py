@@ -86,6 +86,8 @@ class Order(Base):
     sheet_sync_status = Column(String, nullable=False, default="pending")
     sheet_synced_at = Column(DateTime(timezone=True), nullable=True)
     notes = Column(Text, nullable=True)
+    # True when phone is in GEO_ORDER_BYPASS_PHONES (geo/VPN bypass for ops testing).
+    is_test_order = Column(Boolean, nullable=False, default=False)
     created_at = Column(DateTime(timezone=True), default=utcnow, nullable=False, index=True)
     updated_at = Column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
 

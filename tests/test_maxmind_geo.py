@@ -15,6 +15,11 @@ def maxmind_enabled(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(maxmind_geo.settings, "GEO_ORDER_BYPASS_PHONES", "")
 
 
+def test_bypass_whitelist_0550505044(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(maxmind_geo.settings, "GEO_ORDER_BYPASS_PHONES", "0550505044")
+    assert maxmind_geo.phone_bypasses_geo_check("+966550505044")
+
+
 def test_bypass_whitelist_implied_leading_five(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(maxmind_geo.settings, "GEO_ORDER_BYPASS_PHONES", "643281895")
     assert maxmind_geo.phone_bypasses_geo_check("+9665643281895")
@@ -61,6 +66,77 @@ async def test_blocks_non_sa(maxmind_enabled: None) -> None:
                 "203.0.113.55", "+966511111111"
             )
         assert exc.value.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_production_missing_maxmind_bypass_ok(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(maxmind_geo.settings, "MAXMIND_ACCOUNT_ID", "")
+    monkeypatch.setattr(maxmind_geo.settings, "MAXMIND_LICENSE_KEY", "")
+    monkeypatch.setattr(maxmind_geo.settings, "APP_ENV", "production")
+    monkeypatch.setattr(maxmind_geo.settings, "GEO_ORDER_BYPASS_PHONES", "0550505044")
+    await maxmind_geo.assert_ip_allowed_for_order("8.8.8.8", "+966550505044")
+
+
+@pytest.mark.asyncio
+async def test_production_missing_maxmind_blocks(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(maxmind_geo.settings, "MAXMIND_ACCOUNT_ID", "")
+    monkeypatch.setattr(maxmind_geo.settings, "MAXMIND_LICENSE_KEY", "")
+    monkeypatch.setattr(maxmind_geo.settings, "APP_ENV", "production")
+    monkeypatch.setattr(maxmind_geo.settings, "GEO_ORDER_BYPASS_PHONES", "")
+    with pytest.raises(HTTPException) as exc:
+        await maxmind_geo.assert_ip_allowed_for_order("203.0.113.55", "+966511111111")
+    assert exc.value.status_code == 503
+
+
+@pytest.mark.asyncio
+async def test_development_missing_maxmind_skips(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(maxmind_geo.settings, "MAXMIND_ACCOUNT_ID", "")
+    monkeypatch.setattr(maxmind_geo.settings, "MAXMIND_LICENSE_KEY", "")
+    monkeypatch.setattr(maxmind_geo.settings, "APP_ENV", "development")
+    monkeypatch.setattr(maxmind_geo.settings, "GEO_ORDER_BYPASS_PHONES", "")
+    await maxmind_geo.assert_ip_allowed_for_order("203.0.113.55", "+966511111111")
+
+
+@pytest.mark.asyncio
+async def test_blocks_hosting_provider(maxmind_enabled: None, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(maxmind_geo.settings, "MAXMIND_BLOCK_HOSTING_PROVIDER", True)
+    resp = MagicMock()
+    resp.status_code = 200
+    resp.json.return_value = {
+        "country": {"iso_code": "SA"},
+        "traits": {"is_hosting_provider": True},
+    }
+    mock_instance = MagicMock()
+    mock_instance.get = AsyncMock(return_value=resp)
+    async_cm = MagicMock()
+    async_cm.__aenter__ = AsyncMock(return_value=mock_instance)
+    async_cm.__aexit__ = AsyncMock(return_value=None)
+
+    with patch("app.services.maxmind_geo.httpx.AsyncClient", return_value=async_cm):
+        with pytest.raises(HTTPException) as exc:
+            await maxmind_geo.assert_ip_allowed_for_order(
+                "203.0.113.55", "+966511111111"
+            )
+        assert exc.value.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_allows_hosting_when_disabled(maxmind_enabled: None, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(maxmind_geo.settings, "MAXMIND_BLOCK_HOSTING_PROVIDER", False)
+    resp = MagicMock()
+    resp.status_code = 200
+    resp.json.return_value = {
+        "country": {"iso_code": "SA"},
+        "traits": {"is_hosting_provider": True},
+    }
+    mock_instance = MagicMock()
+    mock_instance.get = AsyncMock(return_value=resp)
+    async_cm = MagicMock()
+    async_cm.__aenter__ = AsyncMock(return_value=mock_instance)
+    async_cm.__aexit__ = AsyncMock(return_value=None)
+
+    with patch("app.services.maxmind_geo.httpx.AsyncClient", return_value=async_cm):
+        await maxmind_geo.assert_ip_allowed_for_order("203.0.113.55", "+966511111111")
 
 
 @pytest.mark.asyncio

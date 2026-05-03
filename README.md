@@ -21,10 +21,19 @@ FastAPI + PostgreSQL backend for the NAJD Men's Grooming e-commerce store.
 
 ### 1. Configure environment
 
+**Docker Compose (موصى به):** انسخ ملف البيئة المحلي — لا تستخدم `.env.example` مباشرة إذا كان فيه `DATABASE_URL` مع `${DB_PASSWORD}` وفاضي؛ التطبيق يوقف عند الإقلاع.
+
 ```bash
-cp .env.example .env
-# Edit .env — set DB_PASSWORD and any pixel credentials you want to test
+cd backend
+copy env.local.example .env
 ```
+
+**أو** يدوياً: تأكد أن `DATABASE_URL` **بدون** placeholder، مثل:
+
+`postgresql+asyncpg://najd:localdev@db:5432/najd` داخل Docker، أو
+`postgresql+asyncpg://najd:localdev@localhost:5432/najd` إذا شغّلت Postgres على جهازك فقط.
+
+**إنتاج / Easypanel:** انسخ من `.env.example` واملأ `DB_PASSWORD` أو ضع `DATABASE_URL` كاملاً.
 
 ### 2. Start services
 
@@ -33,12 +42,22 @@ docker compose up --build
 ```
 
 This will:
-1. Start a PostgreSQL 16 container
-2. Build the backend image
-3. Seed the 3 initial products (najd-clear, najd-align, najd-rest) *(requires schema already applied — run migrations manually first, see below)*
-4. Start the API on http://localhost:8000
 
-Apply the schema once before first run, e.g. `docker compose run --rm backend alembic upgrade head` *(or another container with the same `DATABASE_URL`)*.
+1. Start PostgreSQL 16
+2. Build and start the API — **`entrypoint.sh` runs `alembic upgrade head` automatically**, then Uvicorn
+3. On startup, products are **seeded** (if tables exist and seed rows are missing)
+
+API: **http://localhost:8000** — `GET /health` should return `{"ok":true}`.
+
+### Troubleshooting
+
+| Symptom | Fix |
+|--------|-----|
+| **Startup error: DB_PASSWORD is required** | Do not leave `${DB_PASSWORD}` in `DATABASE_URL` without a password. Use `env.local.example` → `.env`. |
+| **`relation "products" does not exist`** | From the `backend` folder: `docker compose run --rm backend alembic upgrade head`, or rebuild/restart the app container after fixing `entrypoint.sh`. |
+| **POST /orders fails or IP/geo issues** | **Production:** set both `MAXMIND_ACCOUNT_ID` and `MAXMIND_LICENSE_KEY`, or orders return 503 (except phones in `GEO_ORDER_BYPASS_PHONES`). **Development:** leave MaxMind empty to skip checks. Use `MAXMIND_FAIL_OPEN=true` only if you accept risk when MaxMind is down. Set `MAXMIND_BLOCK_HOSTING_PROVIDER=false` if legitimate users are blocked. |
+| **Frontend cannot reach the API** | In the frontend `.env`: `NEXT_PUBLIC_API_URL=http://localhost:8000` |
+| **CORS** | `CORS_ORIGINS` must include `http://localhost:3000` |
 
 ### 3. Verify
 
@@ -89,12 +108,18 @@ Tests are unit-only and do not require a running database.
 | `SNAP_ACCESS_TOKEN` | no | Snapchat Conversions API access token |
 | `SNAP_TEST_EVENT_CODE` | no | Test event code for Snapchat (dev only) |
 | `LOG_LEVEL` | no | `DEBUG`, `INFO`, `WARNING`, `ERROR` |
+| `MAXMIND_ACCOUNT_ID` | **yes in production** | [GeoIP Insights](https://dev.maxmind.com/geoip/docs/web-services) — numeric account ID |
+| `MAXMIND_LICENSE_KEY` | **yes in production** | Secret license key from MaxMind |
+| `MAXMIND_IP_RISK_THRESHOLD` | no | Block when `traits.ip_risk_snapshot` ≥ this (default 50) |
+| `MAXMIND_BLOCK_HOSTING_PROVIDER` | no | Block datacenter/hosting IPs (default `true`; set `false` if false positives) |
+| `MAXMIND_FAIL_OPEN` | no | If `true`, allow orders when MaxMind HTTP fails |
+| `GEO_ORDER_BYPASS_PHONES` | no | Saudi test numbers that skip MaxMind; order row gets `is_test_order=true` (excluded from Sheet + CAPI + purchase pixel) |
 
 ---
 
 ## Database Migrations
 
-Migrations live in `alembic/versions/`. They are **not** run automatically on container start — run `alembic upgrade head` yourself (local shell, one-off job, CI, or Easypanel script) whenever you deploy schema changes.
+Migrations live in `alembic/versions/`. **Docker / this repo’s image:** `entrypoint.sh` runs `alembic upgrade head` before Uvicorn starts. For local venv without Docker, run `alembic upgrade head` yourself after pulling schema changes. In multi-replica production setups, you may prefer a dedicated migration job instead of every replica running upgrades.
 
 ### Create a new migration
 
@@ -168,7 +193,17 @@ Prices are always recalculated server-side from `offer_qty` — the `price_sar` 
 5. Add a **PostgreSQL** service and copy the connection string.
 6. Set all environment variables from `.env.example` in the Easypanel environment editor.
 7. Set `DATABASE_URL` to point at the Easypanel Postgres service.
-8. Deploy the app, then run **`alembic upgrade head`** when needed (Easypanel **Script** / one-off task, or your DB pipeline) — it is no longer part of the container start command.
+8. Deploy the app. The container **`entrypoint.sh`** runs **`alembic upgrade head`** on each start; you can still run migrations manually from Easypanel **Script** / one-off task if you disable that behaviour or need to run upgrades before traffic arrives.
+
+### Test order from outside Saudi Arabia (one number only)
+
+Only numbers in **`GEO_ORDER_BYPASS_PHONES`** skip MaxMind (KSA/VPN/risk). For NAJD test SIM use **exactly this single value** — no commas, no extra numbers:
+
+```env
+GEO_ORDER_BYPASS_PHONES=0550505044
+```
+
+Any other format (e.g. `0550505044,05…`) adds more bypass numbers. To disable bypass entirely, set `GEO_ORDER_BYPASS_PHONES=` (empty).
 
 ### Health check
 

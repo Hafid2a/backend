@@ -53,6 +53,7 @@ async def create_order_endpoint(
         total_sar=order_total,
         status=order_status,
         upsell=upsell,
+        is_test_order=order.is_test_order,
     )
 
 
@@ -60,6 +61,9 @@ async def _run_sheet_webhook(order_number: str) -> None:
     try:
         async with AsyncSessionLocal() as db:
             order = await get_order_by_number(db, order_number)
+            if order and order.is_test_order:
+                logger.info("Skipping sheet webhook for test order %s", order_number)
+                return
             if order:
                 await db.refresh(order, ["items"])
                 await send_order_to_sheet(db, order)
@@ -71,6 +75,9 @@ async def _run_capi_dispatch(order_number: str, purchase_event_id: str) -> None:
     try:
         async with AsyncSessionLocal() as db:
             order = await get_order_by_number(db, order_number)
+            if order and order.is_test_order:
+                logger.info("Skipping CAPI purchase for test order %s", order_number)
+                return
             if order:
                 await db.refresh(order, ["items"])
                 await dispatch_purchase_capi(db, order, purchase_event_id)
@@ -115,4 +122,5 @@ async def get_order_endpoint(
         currency=order.currency,
         items=[OrderItemOut.model_validate(item) for item in order.items],
         created_at=order.created_at.isoformat() if order.created_at else "",
+        is_test_order=order.is_test_order,
     )

@@ -75,6 +75,8 @@ def _traits_block_reason(traits: dict[str, Any]) -> Optional[str]:
         return "residential_proxy"
     if traits.get("is_tor_exit_node"):
         return "tor_exit"
+    if traits.get("is_hosting_provider") and settings.MAXMIND_BLOCK_HOSTING_PROVIDER:
+        return "hosting_provider"
     risk = traits.get("ip_risk_snapshot")
     if risk is not None and float(risk) >= settings.MAXMIND_IP_RISK_THRESHOLD:
         return f"ip_risk_snapshot={risk}"
@@ -92,6 +94,8 @@ def _anonymizer_block_reason(anonymizer: dict[str, Any]) -> Optional[str]:
         return "anonymizer_residential_proxy"
     if anonymizer.get("is_tor_exit_node"):
         return "anonymizer_tor"
+    if anonymizer.get("is_hosting_provider") and settings.MAXMIND_BLOCK_HOSTING_PROVIDER:
+        return "anonymizer_hosting_provider"
     return None
 
 
@@ -100,16 +104,27 @@ async def assert_ip_allowed_for_order(
     phone_e164: str,
 ) -> None:
     """
-    Geo + anonymizer gate for COD orders: KSA only, no VPN/proxy/tor, risk score below threshold.
-    Skipped when MaxMind credentials are unset, or when phone is bypass-listed.
+    Geo + anonymizer gate for COD orders: KSA only, no VPN/proxy/tor/hosting (optional), risk score below threshold.
+    Bypass list skips all checks (for trusted test numbers in production).
+    In development, checks are skipped if MaxMind credentials are unset. In production, missing credentials block orders (except bypass phones).
     """
-    if not settings.MAXMIND_ACCOUNT_ID or not settings.MAXMIND_LICENSE_KEY:
-        logger.warning("MAXMIND_ACCOUNT_ID / MAXMIND_LICENSE_KEY not set; skipping IP geo check")
-        return
-
     if phone_bypasses_geo_check(phone_e164):
         logger.info(
             "Geo check skipped for bypass-listed phone %s", mask_phone(phone_e164)
+        )
+        return
+
+    if not settings.MAXMIND_ACCOUNT_ID or not settings.MAXMIND_LICENSE_KEY:
+        if settings.APP_ENV.strip().lower() == "production":
+            logger.error(
+                "MaxMind credentials missing in production; refusing order (non-bypass phone)"
+            )
+            raise HTTPException(
+                status_code=503,
+                detail="خدمة التحقق من الاتصال غير مُهيأة حالياً. حاول لاحقاً أو تواصل مع المتجر.",
+            )
+        logger.warning(
+            "MAXMIND_ACCOUNT_ID / MAXMIND_LICENSE_KEY not set; skipping IP geo check (non-production)"
         )
         return
 
@@ -118,7 +133,7 @@ async def assert_ip_allowed_for_order(
         raise HTTPException(status_code=403, detail=_GEO_REJECT_DETAIL)
 
     if _is_non_public_ip(client_ip):
-        if settings.APP_ENV == "development":
+        if settings.APP_ENV.strip().lower() == "development":
             logger.warning("Private/local client IP in development; skipping MaxMind (%s)", client_ip)
             return
         logger.info("Order blocked: non-public IP %s", client_ip)

@@ -33,14 +33,18 @@ class Settings(BaseSettings):
     SNAP_TEST_EVENT_CODE: str = ""
 
     # MaxMind GeoIP Insights (https://dev.maxmind.com/geoip/docs/web-services)
+    # Account ID = numeric account id; License Key = secret from MaxMind "Generate a License Key"
     MAXMIND_ACCOUNT_ID: str = ""
     MAXMIND_LICENSE_KEY: str = ""
     # When traits.ip_risk_snapshot is present, block at or above this value (1–99 scale).
     MAXMIND_IP_RISK_THRESHOLD: float = 50.0
+    # Block datacenter / hosting IPs (helps catch VPNs that only set is_hosting_provider).
+    MAXMIND_BLOCK_HOSTING_PROVIDER: bool = True
     # If True, allow orders when MaxMind is unreachable (default: fail closed).
     MAXMIND_FAIL_OPEN: bool = False
-    # Comma-separated phones that skip geo/IP checks (E.164, 05xxxxxxxx, or 9 digits after 5).
-    GEO_ORDER_BYPASS_PHONES: str = "643281895"
+    # Test phones that skip MaxMind (05… / +966…). Default keeps 0550505044 for NAJD testing.
+    # Set GEO_ORDER_BYPASS_PHONES= (empty) in .env to disable all bypasses.
+    GEO_ORDER_BYPASS_PHONES: str = "0550505044"
 
     LOG_LEVEL: str = "INFO"
 

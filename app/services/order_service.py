@@ -12,7 +12,7 @@ from app.schemas.order import (
     OrderItemOut,
 )
 from app.services.phone import normalize_saudi_mobile, mask_phone
-from app.services.maxmind_geo import assert_ip_allowed_for_order
+from app.services.maxmind_geo import assert_ip_allowed_for_order, phone_bypasses_geo_check
 from fastapi import HTTPException
 
 logger = logging.getLogger("najd")
@@ -80,7 +80,13 @@ async def create_order(
 
     await assert_ip_allowed_for_order(client_ip, phone_e164)
 
-    logger.info(f"Creating order for phone {mask_phone(phone_e164)}")
+    is_test_order = phone_bypasses_geo_check(phone_e164)
+    if is_test_order:
+        logger.info(
+            "Creating TEST order (geo-bypass phone) %s", mask_phone(phone_e164)
+        )
+    else:
+        logger.info("Creating order for phone %s", mask_phone(phone_e164))
 
     order_number = await _generate_order_number(db)
 
@@ -151,6 +157,7 @@ async def create_order(
         ttp=browser.ttp if browser else None,
         scid=browser.scid if browser else None,
         sheet_sync_status="pending",
+        is_test_order=is_test_order,
         created_at=utcnow(),
         updated_at=utcnow(),
     )
