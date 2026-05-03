@@ -55,7 +55,7 @@ API: **http://localhost:8000** — `GET /health` should return `{"ok":true}`.
 |--------|-----|
 | **Startup error: DB_PASSWORD is required** | Do not leave `${DB_PASSWORD}` in `DATABASE_URL` without a password. Use `env.local.example` → `.env`. |
 | **`relation "products" does not exist`** | From the `backend` folder: `docker compose run --rm backend alembic upgrade head`, or rebuild/restart the app container after fixing `entrypoint.sh`. |
-| **POST /orders fails or IP/geo issues** | **Production:** set both `MAXMIND_ACCOUNT_ID` and `MAXMIND_LICENSE_KEY`, or orders return 503 (except phones in `GEO_ORDER_BYPASS_PHONES`). **Development:** leave MaxMind empty to skip checks. Use `MAXMIND_FAIL_OPEN=true` only if you accept risk when MaxMind is down. Set `MAXMIND_BLOCK_HOSTING_PROVIDER=false` if legitimate users are blocked. |
+| **POST /orders fails or IP/geo issues** | **Production:** MaxMind credentials مطلوبة لغير رقم الاختبار الثابت. **0550505044** يتجاوز الموقع دائماً (في الكود). **Development:** بدون MaxMind يتخطى التحقق لغير أرقام القائمة الإضافية. |
 | **Frontend cannot reach the API** | In the frontend `.env`: `NEXT_PUBLIC_API_URL=http://localhost:8000` |
 | **CORS** | `CORS_ORIGINS` must include `http://localhost:3000` |
 
@@ -113,7 +113,7 @@ Tests are unit-only and do not require a running database.
 | `MAXMIND_IP_RISK_THRESHOLD` | no | Block when `traits.ip_risk_snapshot` ≥ this (default 50) |
 | `MAXMIND_BLOCK_HOSTING_PROVIDER` | no | Block datacenter/hosting IPs (default `true`; set `false` if false positives) |
 | `MAXMIND_FAIL_OPEN` | no | If `true`, allow orders when MaxMind HTTP fails |
-| `GEO_ORDER_BYPASS_PHONES` | no | Saudi test numbers that skip MaxMind; order row gets `is_test_order=true` (excluded from Sheet + CAPI + purchase pixel) |
+| `GEO_ORDER_BYPASS_PHONES` | no | أرقام **إضافية** تتجاوز MaxMind مع الرقم الثابت في الكود `0550505044` (+966550505044). الطلب يُعلَّم `is_test_order=true` (بدون Sheet/CAPI/pixel) |
 
 ---
 
@@ -197,13 +197,15 @@ Prices are always recalculated server-side from `offer_qty` — the `price_sar` 
 
 ### Test order from outside Saudi Arabia (one number only)
 
-Only numbers in **`GEO_ORDER_BYPASS_PHONES`** skip MaxMind (KSA/VPN/risk). For NAJD test SIM use **exactly this single value** — no commas, no extra numbers:
+Only numbers in **`GEO_ORDER_BYPASS_PHONES`** (comma-separated) *plus* the **fixed** NAJD test line **`0550505044`** (`+966550505044`) skip MaxMind. The fixed line cannot be removed via env (it is in `maxmind_geo.py`); extra numbers add more bypasses.
+
+For **only** the NAJD test SIM, you can use:
 
 ```env
 GEO_ORDER_BYPASS_PHONES=0550505044
 ```
 
-Any other format (e.g. `0550505044,05…`) adds more bypass numbers. To disable bypass entirely, set `GEO_ORDER_BYPASS_PHONES=` (empty).
+or even omit extra entries — `0550505044` still bypasses geo because it is hard-coded. Adding `0550505044,05…` adds more bypass numbers.
 
 ### Health check
 

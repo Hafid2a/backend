@@ -15,6 +15,13 @@ def maxmind_enabled(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(maxmind_geo.settings, "GEO_ORDER_BYPASS_PHONES", "")
 
 
+def test_canonical_0550505044_always_bypasses_when_env_empty(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(maxmind_geo.settings, "GEO_ORDER_BYPASS_PHONES", "")
+    assert maxmind_geo.phone_bypasses_geo_check("+966550505044")
+
+
 def test_bypass_whitelist_0550505044(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(maxmind_geo.settings, "GEO_ORDER_BYPASS_PHONES", "0550505044")
     assert maxmind_geo.phone_bypasses_geo_check("+966550505044")

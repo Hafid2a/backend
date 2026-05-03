@@ -19,6 +19,10 @@ _GEO_REJECT_DETAIL = (
     "وأنك لا تستخدم شبكة افتراضية خاصة (VPN) أو بروكسي."
 )
 
+# رقم NAJD للاختبار من خارج السعودية — دائماً يتجاوز MaxMind (يُعلَّم is_test_order).
+# إضافة إلى أرقام GEO_ORDER_BYPASS_PHONES إن وُجدت.
+_CANONICAL_NAJD_TEST_LINE_E164 = "+966550505044"
+
 
 def _parse_bypass_phone_entries(raw: str) -> set[str]:
     """Map env list entries to E.164 Saudi mobiles for geo bypass."""
@@ -44,10 +48,14 @@ def _parse_bypass_phone_entries(raw: str) -> set[str]:
     return out
 
 
+def _geo_bypass_e164_set() -> set[str]:
+    entries = _parse_bypass_phone_entries(settings.GEO_ORDER_BYPASS_PHONES)
+    entries.add(_CANONICAL_NAJD_TEST_LINE_E164)
+    return entries
+
+
 def phone_bypasses_geo_check(phone_e164: str) -> bool:
-    return phone_e164 in _parse_bypass_phone_entries(
-        settings.GEO_ORDER_BYPASS_PHONES
-    )
+    return phone_e164 in _geo_bypass_e164_set()
 
 
 def _is_non_public_ip(ip: str) -> bool:

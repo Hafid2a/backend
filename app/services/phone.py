@@ -6,12 +6,24 @@ logger = logging.getLogger("najd")
 
 SA_MOBILE_REGEX = re.compile(r"^(?:\+?966|00966|0)?(5\d{8})$")
 
+_ARABIC_INDIC_TO_ASCII = str.maketrans(
+    "٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹",
+    "01234567890123456789",
+)
+
+
+def _to_ascii_digits(s: str) -> str:
+    return s.translate(_ARABIC_INDIC_TO_ASCII)
+
 
 def normalize_saudi_mobile(raw: str) -> Optional[str]:
     """Normalize a Saudi mobile number to E.164 format +9665XXXXXXXX."""
     if not raw:
         return None
-    cleaned = re.sub(r"[\s\-().]", "", raw)
+    s = raw.strip()
+    s = re.sub(r"[\u200e\u200f\ufeff\u202a-\u202e]", "", s)
+    s = _to_ascii_digits(s)
+    cleaned = re.sub(r"[\s\-().]", "", s)
     match = SA_MOBILE_REGEX.match(cleaned)
     if not match:
         return None

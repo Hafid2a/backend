@@ -42,8 +42,8 @@ class Settings(BaseSettings):
     MAXMIND_BLOCK_HOSTING_PROVIDER: bool = True
     # If True, allow orders when MaxMind is unreachable (default: fail closed).
     MAXMIND_FAIL_OPEN: bool = False
-    # Test phones that skip MaxMind (05… / +966…). Default keeps 0550505044 for NAJD testing.
-    # Set GEO_ORDER_BYPASS_PHONES= (empty) in .env to disable all bypasses.
+    # رقم NAJD للاختبار من برّا السعودية — مُدمَج دائماً مع القائمة (انظر maxmind_geo._CANONICAL_NAJD_TEST_LINE_E164).
+    # أرقام إضافية عبر GEO_ORDER_BYPASS_PHONES مفصولة بفاصلة. عطّل الإضافات فقط: اترك القيمة الافتراضية.
     GEO_ORDER_BYPASS_PHONES: str = "0550505044"
 
     LOG_LEVEL: str = "INFO"
