@@ -44,7 +44,8 @@ class Settings(BaseSettings):
     MAXMIND_FAIL_OPEN: bool = False
     # رقم NAJD للاختبار من برّا السعودية — مُدمَج دائماً مع القائمة (انظر maxmind_geo._CANONICAL_NAJD_TEST_LINE_E164).
     # أرقام إضافية عبر GEO_ORDER_BYPASS_PHONES مفصولة بفاصلة. عطّل الإضافات فقط: اترك القيمة الافتراضية.
-    GEO_ORDER_BYPASS_PHONES: str = "0550505044"
+    # If True: skip MaxMind for ALL orders (any Saudi mobile from any country). Risk: fraud / non-KSA traffic. Use for testing or special campaigns only.
+    SKIP_ORDER_GEO_CHECK: bool = False
 
     LOG_LEVEL: str = "INFO"
 

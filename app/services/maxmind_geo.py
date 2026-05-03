@@ -114,8 +114,15 @@ async def assert_ip_allowed_for_order(
     """
     Geo + anonymizer gate for COD orders: KSA only, no VPN/proxy/tor/hosting (optional), risk score below threshold.
     Bypass list skips all checks (for trusted test numbers in production).
+    Set SKIP_ORDER_GEO_CHECK=true to skip MaxMind for all phones (testing / leads).
     In development, checks are skipped if MaxMind credentials are unset. In production, missing credentials block orders (except bypass phones).
     """
+    if settings.SKIP_ORDER_GEO_CHECK:
+        logger.warning(
+            "SKIP_ORDER_GEO_CHECK=true: MaxMind geo/VPN gate disabled for all orders"
+        )
+        return
+
     if phone_bypasses_geo_check(phone_e164):
         logger.info(
             "Geo check skipped for bypass-listed phone %s", mask_phone(phone_e164)

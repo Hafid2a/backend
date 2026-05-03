@@ -85,6 +85,15 @@ async def test_production_missing_maxmind_bypass_ok(monkeypatch: pytest.MonkeyPa
 
 
 @pytest.mark.asyncio
+async def test_skip_order_geo_check_allows_all(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(maxmind_geo.settings, "SKIP_ORDER_GEO_CHECK", True)
+    monkeypatch.setattr(maxmind_geo.settings, "MAXMIND_ACCOUNT_ID", "")
+    monkeypatch.setattr(maxmind_geo.settings, "MAXMIND_LICENSE_KEY", "")
+    monkeypatch.setattr(maxmind_geo.settings, "APP_ENV", "production")
+    await maxmind_geo.assert_ip_allowed_for_order("203.0.113.99", "+966511111111")
+
+
+@pytest.mark.asyncio
 async def test_production_missing_maxmind_blocks(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(maxmind_geo.settings, "MAXMIND_ACCOUNT_ID", "")
     monkeypatch.setattr(maxmind_geo.settings, "MAXMIND_LICENSE_KEY", "")

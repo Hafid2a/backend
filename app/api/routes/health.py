@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Query
 
+from app.core.config import settings
 from app.services.maxmind_geo import phone_bypasses_geo_check
 from app.services.phone import normalize_saudi_mobile
 
@@ -30,15 +31,22 @@ async def phone_geo_preview(
             ),
         }
     bypass = phone_bypasses_geo_check(e164)
+    gate_on = not settings.SKIP_ORDER_GEO_CHECK
+    skips_geo = bypass or settings.SKIP_ORDER_GEO_CHECK
     return {
         "valid_saudi_mobile": True,
-        "skips_maxmind_geo": bypass,
+        "skips_maxmind_geo": skips_geo,
+        "geo_gate_enabled": gate_on,
         "last4": e164[-4:],
         "hint_ar": (
-            "إلا skips_maxmind_geo=false رغم إدخال 0550505044: الباكند قديم أو غير مُنشر "
-            "من آخر كود."
-            if not bypass
-            else "هاد الرقم كيتجاوز فحص الدولة/VPN على السيرفر؛ إلا الطلب كيفشل "
-            "المشكل غالباً اتصال الفرونت (API_URL) مو الرقم."
+            "على السيرفر SKIP_ORDER_GEO_CHECK=true: أي رقم سعودي يدوز من أي بلد."
+            if settings.SKIP_ORDER_GEO_CHECK
+            else (
+                "إلا skips_maxmind_geo=false رغم إدخال 0550505044: الباكند قديم أو غير مُنشر "
+                "من آخر كود."
+                if not bypass
+                else "هاد الرقم كيتجاوز فحص الدولة/VPN على السيرفر؛ إلا الطلب كيفشل "
+                "المشكل غالباً اتصال الفرونت (API_URL) مو الرقم."
+            )
         ),
     }
