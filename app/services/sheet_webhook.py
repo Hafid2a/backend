@@ -1,11 +1,83 @@
 import httpx
 import logging
 from datetime import timezone
+from urllib.parse import urljoin
+from zoneinfo import ZoneInfo
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
 from app.db.models import Order, OrderItem, utcnow
 
 logger = logging.getLogger("najd")
+
+# Google Apps Script Web Apps respond with redirects; POST must arrive at the final URL with a JSON body.
+# httpx defaults to follow_redirects=False (non-200), and following 302 can downgrade POST→GET.
+
+
+async def _post_json_sheet_webhook(
+    client: httpx.AsyncClient,
+    url: str,
+    payload: dict,
+    headers: dict,
+    *,
+    max_hops: int = 8,
+) -> httpx.Response:
+    current = url
+    last_response: httpx.Response | None = None
+    for hop in range(max_hops):
+        response = await client.post(
+            current,
+            json=payload,
+            headers=headers,
+            follow_redirects=False,
+        )
+        last_response = response
+        if response.status_code == 200:
+            return response
+        loc = response.headers.get("location")
+        if (
+            loc
+            and response.status_code in (301, 302, 303, 307, 308)
+        ):
+            current = urljoin(str(response.request.url), loc)
+            logger.debug(
+                "Sheet webhook redirect hop %s -> %s (status %s)",
+                hop + 1,
+                current[:120],
+                response.status_code,
+            )
+            continue
+        return response
+    assert last_response is not None
+    return last_response
+
+# Matches `backend/app/db/seed.py` product slugs → SKU for Google Sheet column "sku".
+_SLUG_TO_SKU: dict[str, str] = {
+    "najd-night-dew": "NAJD-NIGHT-DEW",
+    "najd-night-calm": "NAJD-NIGHT-CALM",
+    "najd-night-glow": "NAJD-NIGHT-GLOW",
+}
+
+
+def _sheet_date_riyadh(order: Order) -> str:
+    if not order.created_at:
+        return ""
+    return order.created_at.astimezone(ZoneInfo("Asia/Riyadh")).strftime("%Y-%m-%d %H:%M")
+
+
+def _product_names_line(items: list[OrderItem]) -> str:
+    return " | ".join(f"{i.product_name_ar} x{i.quantity}" for i in items)
+
+
+def _sku_qty_line(items: list[OrderItem]) -> str:
+    parts: list[str] = []
+    for i in items:
+        sku = _SLUG_TO_SKU.get(i.product_slug, i.product_slug.upper())
+        parts.append(f"{sku}×{i.quantity}")
+    return ", ".join(parts)
+
+
+def _total_quantity(items: list[OrderItem]) -> int:
+    return sum(i.quantity for i in items)
 
 
 def _build_items_summary(items: list[OrderItem], upsell_only: bool = False) -> str:
@@ -30,6 +102,7 @@ async def send_order_to_sheet(db: AsyncSession, order: Order) -> bool:
         if order.created_at
         else ""
     )
+    sheet_items = sorted(order.items, key=lambda i: (i.is_upsell, i.created_at))
 
     payload = {
         "secret": settings.SHEET_WEBHOOK_SECRET,
@@ -51,6 +124,12 @@ async def send_order_to_sheet(db: AsyncSession, order: Order) -> bool:
         "client_ip": order.client_ip or "",
         "user_agent": order.user_agent or "",
         "notes": order.notes or "",
+        # Google Sheet «NAJD STORER» columns (Apps Script maps these):
+        "sheet_date": _sheet_date_riyadh(order),
+        "sheet_country": "Saudi Arabia",
+        "sheet_product": _product_names_line(sheet_items),
+        "sheet_sku": _sku_qty_line(sheet_items),
+        "sheet_quantity": _total_quantity(sheet_items),
     }
 
     headers: dict = {}
@@ -58,11 +137,12 @@ async def send_order_to_sheet(db: AsyncSession, order: Order) -> bool:
         headers["X-NAJD-SECRET"] = settings.SHEET_WEBHOOK_SECRET
 
     try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            response = await client.post(
-                settings.SHEET_WEBHOOK_URL,
-                json=payload,
-                headers=headers,
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            response = await _post_json_sheet_webhook(
+                client,
+                settings.SHEET_WEBHOOK_URL.strip(),
+                payload,
+                headers,
             )
             if response.status_code == 200:
                 order.sheet_sync_status = "synced"
@@ -70,7 +150,11 @@ async def send_order_to_sheet(db: AsyncSession, order: Order) -> bool:
                 await db.commit()
                 return True
             else:
-                logger.error(f"Sheet webhook returned {response.status_code}: {response.text}")
+                logger.error(
+                    "Sheet webhook returned %s: %s",
+                    response.status_code,
+                    (response.text or "")[:500],
+                )
                 order.sheet_sync_status = "failed"
                 await db.commit()
                 return False

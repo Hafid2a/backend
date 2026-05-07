@@ -19,38 +19,38 @@ def test_upsell_price() -> None:
 
 
 def test_recalculate_single_bundle_1() -> None:
-    items = [{"product_id": "najd-clear", "offer_qty": 1}]
+    items = [{"product_id": "najd-night-dew", "offer_qty": 1}]
     assert _recalculate_total(items) == 199
 
 
 def test_recalculate_single_bundle_2() -> None:
-    items = [{"product_id": "najd-clear", "offer_qty": 2}]
+    items = [{"product_id": "najd-night-dew", "offer_qty": 2}]
     assert _recalculate_total(items) == 279
 
 
 def test_recalculate_single_bundle_3() -> None:
-    items = [{"product_id": "najd-clear", "offer_qty": 3}]
+    items = [{"product_id": "najd-night-dew", "offer_qty": 3}]
     assert _recalculate_total(items) == 349
 
 
 def test_recalculate_multiple_items() -> None:
     items = [
-        {"product_id": "najd-clear", "offer_qty": 2},
-        {"product_id": "najd-rest", "offer_qty": 1},
+        {"product_id": "najd-night-dew", "offer_qty": 2},
+        {"product_id": "najd-night-calm", "offer_qty": 1},
     ]
     assert _recalculate_total(items) == 279 + 199
 
 
 def test_recalculate_with_upsell() -> None:
     items = [
-        {"product_id": "najd-clear", "offer_qty": 2},
-        {"product_id": "najd-rest", "offer_qty": 1, "is_upsell": True},
+        {"product_id": "najd-night-dew", "offer_qty": 2},
+        {"product_id": "najd-night-calm", "offer_qty": 1, "is_upsell": True},
     ]
     assert _recalculate_total(items) == 279 + 99
 
 
 def test_recalculate_invalid_qty() -> None:
-    items = [{"product_id": "najd-clear", "offer_qty": 5}]
+    items = [{"product_id": "najd-night-dew", "offer_qty": 5}]
     with pytest.raises(ValueError, match="Invalid offer_qty"):
         _recalculate_total(items)
 
@@ -66,8 +66,8 @@ def test_offer_type_unknown_defaults_bundle_1() -> None:
 
 
 def test_product_names_arabic() -> None:
-    assert "najd-clear" in PRODUCT_NAMES
-    assert "najd-align" in PRODUCT_NAMES
-    assert "najd-rest" in PRODUCT_NAMES
+    assert "najd-night-dew" in PRODUCT_NAMES
+    assert "najd-night-calm" in PRODUCT_NAMES
+    assert "najd-night-glow" in PRODUCT_NAMES
     for name in PRODUCT_NAMES.values():
         assert len(name) > 0

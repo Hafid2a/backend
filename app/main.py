@@ -20,7 +20,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 app = FastAPI(
     title="NAJD API",
-    description="NAJD Men's Grooming Store Backend",
+    description="NAJD night skincare storefront API — cosmetics-facing copy",
     version="1.0.0",
     lifespan=lifespan,
 )

@@ -20,17 +20,17 @@ logger = logging.getLogger("najd")
 OFFER_PRICE_TABLE: dict[int, int] = {1: 199, 2: 279, 3: 349}
 
 UPSELL_MAP: dict[str, str] = {
-    "najd-clear": "najd-rest",
-    "najd-align": "najd-clear",
-    "najd-rest": "najd-align",
+    "najd-night-dew": "najd-night-calm",
+    "najd-night-calm": "najd-night-glow",
+    "najd-night-glow": "najd-night-dew",
 }
 
 UPSELL_PRICE = 99
 
 PRODUCT_NAMES: dict[str, str] = {
-    "najd-clear": "نجد كلير",
-    "najd-align": "نجد ألاين",
-    "najd-rest": "نجد ريست",
+    "najd-night-dew": "نجد ندى الليل",
+    "najd-night-calm": "نجد لمسة الهدوء",
+    "najd-night-glow": "نجد لمعة الراحة",
 }
 
 
