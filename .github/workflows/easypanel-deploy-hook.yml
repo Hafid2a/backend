@@ -1,9 +1,9 @@
-# Optional: after each push to main, ask Easypanel to start a new deployment that
-# pulls the latest commit from the Source tab’s configured branch.
+# After each push to main, ask Easypanel to start a new deployment that
+# pulls the latest commit from the Source tab's configured branch.
 #
-# 1. Easypanel → backend app → find "Deploy Webhook" URL.
-# 2. GitHub repo → Settings → Secrets → Actions → New secret:
-#    name: EASYPANEL_DEPLOY_WEBHOOK  value: <paste webhook URL>
+# 1. Easypanel → backend app → Deployments tab → Deployment Trigger URL.
+# 2. GitHub repo → Settings → Secrets and variables → Actions → New secret:
+#    name: EASYPANEL_BACKEND_HOOK  value: <paste webhook URL>
 #
 # If the secret is not set, this workflow does nothing (does not fail).
 
@@ -19,11 +19,11 @@ jobs:
     steps:
       - name: Trigger Easypanel deployment
         env:
-          HOOK: ${{ secrets.EASYPANEL_DEPLOY_WEBHOOK }}
+          HOOK: ${{ secrets.EASYPANEL_BACKEND_HOOK }}
         run: |
           if [ -z "$HOOK" ]; then
-            echo "EASYPANEL_DEPLOY_WEBHOOK not set; skip (see workflow file header)."
+            echo "EASYPANEL_BACKEND_HOOK not set; skip (see workflow file header)."
             exit 0
           fi
           curl -fsS -X POST "$HOOK"
-          echo "Easypanel deploy triggered."
+          echo "Easypanel backend deploy triggered."
