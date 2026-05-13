@@ -52,9 +52,9 @@ async def _post_json_sheet_webhook(
 
 # Matches `backend/app/db/seed.py` product slugs → SKU for Google Sheet column "sku".
 _SLUG_TO_SKU: dict[str, str] = {
-    "najd-night-dew": "NAJD-NIGHT-DEW",
-    "najd-night-calm": "NAJD-NIGHT-CALM",
-    "najd-night-glow": "NAJD-NIGHT-GLOW",
+    "najd-thabat-al-khat": "NAJD-STAY-PRIMER",
+    "najd-darag-al-nahar": "NAJD-DAY-SPF-50",
+    "najd-safa-al-jabha": "NAJD-HAIRLINE-SERUM",
 }
 
 

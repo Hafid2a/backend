@@ -2,18 +2,18 @@
 import uuid
 import logging
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, update
 from app.db.models import Product, ProductOffer
 
 logger = logging.getLogger("najd")
 
 PRODUCTS_SEED = [
     {
-        "slug": "najd-night-dew",
-        "sku": "NAJD-NIGHT-DEW",
-        "name_ar": "نجد ندى الليل",
-        "name_en": "Najd Night Dew",
-        "short_description_ar": "ماسك ليلي مرطّب للوجه بلمسة خفيفة قبل النوم.",
+        "slug": "najd-thabat-al-khat",
+        "sku": "NAJD-STAY-PRIMER",
+        "name_ar": "نجد ثبات الخط",
+        "name_en": "Najd Line Stay Primer",
+        "short_description_ar": "برايمر وجه خارجي يهدف لمظهر أساس أكثر ثباتاً وتقليل لمعة زائدة مع تحكم أفضل بالدهون على السطح عند بعض البشرات.",
         "status": "active",
         "offers": [
             {"quantity": 1, "price_sar": 199, "compare_at_sar": None, "label_ar": "عبوّة واحدة", "badge_ar": None, "sort_order": 0},
@@ -22,11 +22,11 @@ PRODUCTS_SEED = [
         ],
     },
     {
-        "slug": "najd-night-calm",
-        "sku": "NAJD-NIGHT-CALM",
-        "name_ar": "نجد لمسة الهدوء",
-        "name_en": "Najd Night Calm",
-        "short_description_ar": "ماسك مسائي للوجه بتأثير تجميلي على مظهر الانتعاش قبل النوم.",
+        "slug": "najd-darag-al-nahar",
+        "sku": "NAJD-DAY-SPF-50",
+        "name_ar": "نجد درع النهار",
+        "name_en": "Najd Day Shield SPF50+",
+        "short_description_ar": "واقي شمس وجه خارجي بملمس خفيف يهدف لتقليل الإحساس بالوزن الزائد تحت المكياج مع درجة حماية موضّحة على التغليف وفق اعتمادكم.",
         "status": "active",
         "offers": [
             {"quantity": 1, "price_sar": 199, "compare_at_sar": None, "label_ar": "عبوّة واحدة", "badge_ar": None, "sort_order": 0},
@@ -35,11 +35,11 @@ PRODUCTS_SEED = [
         ],
     },
     {
-        "slug": "najd-night-glow",
-        "sku": "NAJD-NIGHT-GLOW",
-        "name_ar": "نجد لمعة الراحة",
-        "name_en": "Najd Night Glow",
-        "short_description_ar": "ماسك مسائي للوجه لتأثير تجميلي على مظهر الإشراق قبل النوم.",
+        "slug": "najd-safa-al-jabha",
+        "sku": "NAJD-HAIRLINE-SERUM",
+        "name_ar": "نجد صفاء الجبهة",
+        "name_en": "Najd Hairline Clarity Serum",
+        "short_description_ar": "سيروم وجه خارجي موضَّع لمنطقة الجبهة وخط الإيشارب يهدف لتهيئة مظهر الملمس وتقليل مظهر الانسداد الخفيف عند بعض البشرات — بدون ادِّعاء طبي.",
         "status": "active",
         "offers": [
             {"quantity": 1, "price_sar": 199, "compare_at_sar": None, "label_ar": "عبوّة واحدة", "badge_ar": None, "sort_order": 0},
@@ -51,12 +51,17 @@ PRODUCTS_SEED = [
 
 
 async def seed_products(db: AsyncSession) -> None:
+    seed_slugs = {p["slug"] for p in PRODUCTS_SEED}
+
     for product_data in PRODUCTS_SEED:
         result = await db.execute(
             select(Product).where(Product.slug == product_data["slug"])
         )
         existing = result.scalar_one_or_none()
         if existing:
+            if existing.status != "active":
+                existing.status = "active"
+                logger.info(f"Reactivated product: {existing.slug}")
             continue
 
         offers_data = product_data["offers"]
@@ -71,5 +76,18 @@ async def seed_products(db: AsyncSession) -> None:
             db.add(offer)
 
         logger.info(f"Seeded product: {product.slug}")
+
+    # Retire any product no longer in the seed manifest so the storefront
+    # only surfaces the active lineup. Soft-deactivate (preserve order history).
+    result = await db.execute(
+        update(Product)
+        .where(Product.slug.notin_(seed_slugs))
+        .where(Product.status == "active")
+        .values(status="inactive")
+        .returning(Product.slug)
+    )
+    retired = [row[0] for row in result.fetchall()]
+    if retired:
+        logger.info(f"Deactivated obsolete products: {retired}")
 
     await db.commit()
