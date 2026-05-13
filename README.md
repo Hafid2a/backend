@@ -1,6 +1,9 @@
 # NAJD Backend API
 
-FastAPI + PostgreSQL backend for the NAJD Men's Grooming e-commerce store.
+FastAPI + PostgreSQL backend for the NAJD women's facial-care storefront (KSA).
+
+> 👋 **New to the project?** Start with [`HANDOFF.md`](./HANDOFF.md) for the
+> current production state (URLs, env vars, deploy flow, troubleshooting).
 
 ## Stack
 
@@ -168,13 +171,13 @@ alembic history
   "customer_name": "محمد عبدالله",
   "phone": "0512345678",
   "items": [
-    { "product_id": "najd-clear", "offer_qty": 2, "price_sar": 279 }
+    { "product_id": "najd-thabat-al-khat", "offer_qty": 2, "price_sar": 279 }
   ],
   "utm": { "utm_source": "tiktok", "utm_medium": "paid" },
   "click_ids": { "ttclid": "abc123" },
   "browser": { "user_agent": "Mozilla/5.0...", "fbp": "_fbp_..." },
   "event_ids": { "purchase": "uuid-v4-here" },
-  "landing_page": "https://najdofficial.com/najd-clear"
+  "landing_page": "https://najdofficial.com/products/najd-thabat-al-khat"
 }
 ```
 
@@ -221,7 +224,7 @@ Easypanel chooses the Git revision when **a deploy runs**; repo files cannot “
 | Source | Branch must be **`main`**, not a pinned tag or old release. |
 | Environment | Remove a **manually added `GIT_SHA`** variable if you added one; it can lock logs to an old hash. |
 | Webhook / Auto Deploy | Turn on **Auto Deploy** (GitHub PAT with webhooks scope) or POST the service **Deploy Webhook** URL once per release. |
-| GitHub Actions | This repo has `.github/workflows/easypanel-deploy-hook.yml`: add secret **`EASYPANEL_DEPLOY_WEBHOOK`** (the panel’s deploy URL) so each push to `main` can trigger a new deploy. If the secret is unset, the workflow does nothing. |
+| GitHub Actions | This repo has `.github/workflows/easypanel-deploy-hook.yml`: add secret **`EASYPANEL_BACKEND_HOOK`** (the panel's Deployment Trigger URL) so each push to `main` triggers a new deploy. If the secret is unset, the workflow does nothing. The frontend repo uses `EASYPANEL_FRONTEND_HOOK` with its own URL. |
 
 ### MaxMind credentials
 
