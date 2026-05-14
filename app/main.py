@@ -6,7 +6,7 @@ from app.core.config import settings
 from app.core.logging import setup_logging
 from app.db.session import AsyncSessionLocal
 from app.db.seed import seed_products
-from app.api.routes import health, products, orders
+from app.api.routes import health, products, orders, tracking, admin
 
 setup_logging()
 
@@ -36,3 +36,5 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(products.router)
 app.include_router(orders.router)
+app.include_router(tracking.router)
+app.include_router(admin.router)

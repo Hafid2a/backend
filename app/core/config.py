@@ -53,6 +53,9 @@ class Settings(BaseSettings):
 
     CORS_ORIGINS: str = "http://localhost:3000"
 
+    ADMIN_USERNAME: str = ""
+    ADMIN_PASSWORD: str = ""
+
     SHEET_WEBHOOK_URL: str = ""
     SHEET_WEBHOOK_SECRET: str = ""
 
@@ -79,6 +82,12 @@ class Settings(BaseSettings):
     MAXMIND_BLOCK_HOSTING_PROVIDER: bool = True
     # If True, allow orders when MaxMind is unreachable (default: fail closed).
     MAXMIND_FAIL_OPEN: bool = False
+    # Optional second VPN/proxy provider. URL can contain "{ip}" and should return JSON
+    # with common booleans like vpn/proxy/tor/hosting or a fraud/risk score.
+    SECONDARY_VPN_CHECK_URL: str = ""
+    SECONDARY_VPN_CHECK_API_KEY: str = ""
+    SECONDARY_VPN_FAIL_OPEN: bool = False
+    SECONDARY_VPN_RISK_THRESHOLD: float = 50.0
     # رقم NAJD للاختبار من برّا السعودية — مُدمَج دائماً مع القائمة (انظر maxmind_geo._CANONICAL_NAJD_TEST_LINE_E164).
     # أرقام إضافية عبر GEO_ORDER_BYPASS_PHONES مفصولة بفاصلة. عطّل الإضافات فقط: اترك القيمة الافتراضية.
     # If True: skip MaxMind for ALL orders (any Saudi mobile from any country). Risk: fraud / non-KSA traffic. Use for testing or special campaigns only.

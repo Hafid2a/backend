@@ -137,3 +137,32 @@ class TrackingEvent(Base):
     order = relationship("Order", back_populates="tracking_events")
 
     __table_args__ = (Index("ix_tracking_events_platform", "platform"),)
+
+
+class ClickEvent(Base):
+    __tablename__ = "click_events"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    event_id = Column(String, nullable=False, unique=True, index=True)
+    client_ip = Column(String, nullable=True)
+    country_code = Column(String, nullable=True)
+    is_valid_ksa_ip = Column(Boolean, nullable=False, default=False, index=True)
+    ip_check_provider = Column(String, nullable=True)
+    ip_reject_reason = Column(Text, nullable=True)
+    landing_page = Column(Text, nullable=True)
+    referrer = Column(Text, nullable=True)
+    user_agent = Column(Text, nullable=True)
+    utm_source = Column(String, nullable=True)
+    utm_medium = Column(String, nullable=True)
+    utm_campaign = Column(String, nullable=True)
+    utm_content = Column(String, nullable=True)
+    utm_term = Column(String, nullable=True)
+    fbclid = Column(String, nullable=True)
+    ttclid = Column(String, nullable=True)
+    sc_click_id = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=utcnow, nullable=False, index=True)
+
+    __table_args__ = (
+        Index("ix_click_events_created_valid", "created_at", "is_valid_ksa_ip"),
+        Index("ix_click_events_utm_campaign", "utm_campaign"),
+    )

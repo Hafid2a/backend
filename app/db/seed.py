@@ -9,11 +9,11 @@ logger = logging.getLogger("najd")
 
 PRODUCTS_SEED = [
     {
-        "slug": "najd-thabat-al-khat",
+        "slug": "face-primer",
         "sku": "NAJD-STAY-PRIMER",
-        "name_ar": "نجد ثبات الخط",
-        "name_en": "Najd Line Stay Primer",
-        "short_description_ar": "برايمر وجه خارجي يهدف لمظهر أساس أكثر ثباتاً وتقليل لمعة زائدة مع تحكم أفضل بالدهون على السطح عند بعض البشرات.",
+        "name_ar": "ثبات الخط",
+        "name_en": "Face primer",
+        "short_description_ar": "برايمر خفيف قبل الأساس يهدف تثبيت مظهر الطبقة وتخفيف اللمعة الخارجية مع الحرّ والتكييف والإيشارب.",
         "status": "active",
         "offers": [
             {"quantity": 1, "price_sar": 199, "compare_at_sar": None, "label_ar": "عبوّة واحدة", "badge_ar": None, "sort_order": 0},
@@ -22,11 +22,11 @@ PRODUCTS_SEED = [
         ],
     },
     {
-        "slug": "najd-darag-al-nahar",
+        "slug": "face-sunscreen-spf50",
         "sku": "NAJD-DAY-SPF-50",
-        "name_ar": "نجد درع النهار",
-        "name_en": "Najd Day Shield SPF50+",
-        "short_description_ar": "واقي شمس وجه خارجي بملمس خفيف يهدف لتقليل الإحساس بالوزن الزائد تحت المكياج مع درجة حماية موضّحة على التغليف وفق اعتمادكم.",
+        "name_ar": "درع النهار",
+        "name_en": "SPF 50+ face sunscreen",
+        "short_description_ar": "واقٍ للوجه بملمس أخف: حماية يومية من الشمس وفق التغليف، مع إحساس أقل بالثقل تحت المكياج.",
         "status": "active",
         "offers": [
             {"quantity": 1, "price_sar": 199, "compare_at_sar": None, "label_ar": "عبوّة واحدة", "badge_ar": None, "sort_order": 0},
@@ -35,11 +35,11 @@ PRODUCTS_SEED = [
         ],
     },
     {
-        "slug": "najd-safa-al-jabha",
+        "slug": "forehead-serum",
         "sku": "NAJD-HAIRLINE-SERUM",
-        "name_ar": "نجد صفاء الجبهة",
-        "name_en": "Najd Hairline Clarity Serum",
-        "short_description_ar": "سيروم وجه خارجي موضَّع لمنطقة الجبهة وخط الإيشارب يهدف لتهيئة مظهر الملمس وتقليل مظهر الانسداد الخفيف عند بعض البشرات — بدون ادِّعاء طبي.",
+        "name_ar": "صفاء الجبهة",
+        "name_en": "Targeted forehead serum",
+        "short_description_ar": "سيروم موضّع للجبهة ومحيط الإيشارب: يهدف تهيئة الملمس وتلطيف مظهر الحبوب الصغيرة والخشونة الخفيفة — نتائج فردية.",
         "status": "active",
         "offers": [
             {"quantity": 1, "price_sar": 199, "compare_at_sar": None, "label_ar": "عبوّة واحدة", "badge_ar": None, "sort_order": 0},

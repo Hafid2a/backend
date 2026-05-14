@@ -1,6 +1,7 @@
 import ipaddress
 import logging
 import re
+from dataclasses import dataclass
 from typing import Any, Optional
 from urllib.parse import quote
 
@@ -22,6 +23,14 @@ _GEO_REJECT_DETAIL = (
 # رقم NAJD للاختبار من خارج السعودية — دائماً يتجاوز MaxMind (يُعلَّم is_test_order).
 # إضافة إلى أرقام GEO_ORDER_BYPASS_PHONES إن وُجدت.
 _CANONICAL_NAJD_TEST_LINE_E164 = "+966550505044"
+
+
+@dataclass(frozen=True)
+class IpValidationResult:
+    allowed: bool
+    country_code: Optional[str] = None
+    provider: str = "maxmind"
+    reason: Optional[str] = None
 
 
 def _parse_bypass_phone_entries(raw: str) -> set[str]:
@@ -107,52 +116,105 @@ def _anonymizer_block_reason(anonymizer: dict[str, Any]) -> Optional[str]:
     return None
 
 
-async def assert_ip_allowed_for_order(
-    client_ip: Optional[str],
-    phone_e164: str,
-) -> None:
-    """
-    Geo + anonymizer gate for COD orders: KSA only, no VPN/proxy/tor/hosting (optional), risk score below threshold.
-    Bypass list skips all checks (for trusted test numbers in production).
-    Set SKIP_ORDER_GEO_CHECK=true to skip MaxMind for all phones (testing / leads).
-    In development, checks are skipped if MaxMind credentials are unset. In production, missing credentials block orders (except bypass phones).
-    """
+def _secondary_block_reason(data: dict[str, Any]) -> Optional[str]:
+    for key in (
+        "vpn",
+        "proxy",
+        "tor",
+        "active_vpn",
+        "active_proxy",
+        "is_vpn",
+        "is_proxy",
+        "is_tor",
+        "is_anonymous",
+        "is_hosting_provider",
+    ):
+        if data.get(key) is True:
+            return f"secondary_{key}"
+
+    for key in ("fraud_score", "risk_score", "ip_risk_score", "score"):
+        value = data.get(key)
+        if value is None:
+            continue
+        try:
+            score = float(value)
+        except (TypeError, ValueError):
+            continue
+        if score >= settings.SECONDARY_VPN_RISK_THRESHOLD:
+            return f"secondary_{key}={value}"
+    return None
+
+
+async def _check_secondary_vpn_provider(client_ip: str) -> IpValidationResult:
+    if not settings.SECONDARY_VPN_CHECK_URL:
+        return IpValidationResult(allowed=True, provider="secondary_vpn")
+
+    url = settings.SECONDARY_VPN_CHECK_URL.format(ip=quote(client_ip, safe=""))
+    headers = {}
+    if settings.SECONDARY_VPN_CHECK_API_KEY:
+        headers["Authorization"] = f"Bearer {settings.SECONDARY_VPN_CHECK_API_KEY}"
+
+    try:
+        async with httpx.AsyncClient(timeout=6.0) as client:
+            response = await client.get(url, headers=headers)
+    except httpx.RequestError as exc:
+        logger.error("Secondary VPN provider request failed: %s", exc)
+        return IpValidationResult(
+            allowed=settings.SECONDARY_VPN_FAIL_OPEN,
+            provider="secondary_vpn",
+            reason="secondary_request_failed",
+        )
+
+    if response.status_code != 200:
+        logger.error(
+            "Secondary VPN provider unexpected HTTP %s: %s",
+            response.status_code,
+            response.text[:200],
+        )
+        return IpValidationResult(
+            allowed=settings.SECONDARY_VPN_FAIL_OPEN,
+            provider="secondary_vpn",
+            reason=f"secondary_http_{response.status_code}",
+        )
+
+    data = response.json()
+    reason = _secondary_block_reason(data)
+    if reason:
+        return IpValidationResult(allowed=False, provider="secondary_vpn", reason=reason)
+    return IpValidationResult(allowed=True, provider="secondary_vpn")
+
+
+async def evaluate_ip_for_ksa_traffic(client_ip: Optional[str]) -> IpValidationResult:
+    """Validate traffic for analytics/orders: public Saudi IP, no VPN/proxy/risk flags."""
     if settings.SKIP_ORDER_GEO_CHECK:
         logger.warning(
-            "SKIP_ORDER_GEO_CHECK=true: MaxMind geo/VPN gate disabled for all orders"
+            "SKIP_ORDER_GEO_CHECK=true: geo/VPN gate disabled for analytics/orders"
         )
-        return
-
-    if phone_bypasses_geo_check(phone_e164):
-        logger.info(
-            "Geo check skipped for bypass-listed phone %s", mask_phone(phone_e164)
-        )
-        return
+        return IpValidationResult(allowed=True, provider="skipped")
 
     if not settings.MAXMIND_ACCOUNT_ID or not settings.MAXMIND_LICENSE_KEY:
         if settings.APP_ENV.strip().lower() == "production":
-            logger.error(
-                "MaxMind credentials missing in production; refusing order (non-bypass phone)"
-            )
-            raise HTTPException(
-                status_code=503,
-                detail="خدمة التحقق من الاتصال غير مُهيأة حالياً. حاول لاحقاً أو تواصل مع المتجر.",
+            logger.error("MaxMind credentials missing in production; refusing traffic")
+            return IpValidationResult(
+                allowed=False,
+                provider="maxmind",
+                reason="maxmind_credentials_missing",
             )
         logger.warning(
             "MAXMIND_ACCOUNT_ID / MAXMIND_LICENSE_KEY not set; skipping IP geo check (non-production)"
         )
-        return
+        return IpValidationResult(allowed=True, provider="development_skip")
 
     if not client_ip:
-        logger.info("Order blocked: missing client IP")
-        raise HTTPException(status_code=403, detail=_GEO_REJECT_DETAIL)
+        logger.info("Traffic blocked: missing client IP")
+        return IpValidationResult(allowed=False, provider="maxmind", reason="missing_ip")
 
     if _is_non_public_ip(client_ip):
         if settings.APP_ENV.strip().lower() == "development":
             logger.warning("Private/local client IP in development; skipping MaxMind (%s)", client_ip)
-            return
-        logger.info("Order blocked: non-public IP %s", client_ip)
-        raise HTTPException(status_code=403, detail=_GEO_REJECT_DETAIL)
+            return IpValidationResult(allowed=True, provider="development_skip")
+        logger.info("Traffic blocked: non-public IP %s", client_ip)
+        return IpValidationResult(allowed=False, provider="maxmind", reason="non_public_ip")
 
     path_ip = quote(client_ip, safe="")
     url = f"{INSIGHTS_BASE}/{path_ip}"
@@ -164,27 +226,36 @@ async def assert_ip_allowed_for_order(
             )
     except httpx.RequestError as exc:
         logger.error("MaxMind request failed: %s", exc)
-        if settings.MAXMIND_FAIL_OPEN:
-            return
-        raise HTTPException(status_code=503, detail="خدمة التحقق غير متاحة مؤقتاً. حاول مرة أخرى.") from exc
+        return IpValidationResult(
+            allowed=settings.MAXMIND_FAIL_OPEN,
+            provider="maxmind",
+            reason="maxmind_request_failed",
+        )
 
     if response.status_code == 404:
         logger.info("MaxMind 404 for IP %s", client_ip)
-        raise HTTPException(status_code=403, detail=_GEO_REJECT_DETAIL)
+        return IpValidationResult(allowed=False, provider="maxmind", reason="maxmind_404")
     if response.status_code == 401 or response.status_code == 403:
         logger.error("MaxMind auth rejected (HTTP %s)", response.status_code)
-        raise HTTPException(status_code=503, detail="خدمة التحقق غير متاحة مؤقتاً. حاول مرة أخرى.")
+        return IpValidationResult(allowed=False, provider="maxmind", reason="maxmind_auth_rejected")
     if response.status_code != 200:
         logger.error("MaxMind unexpected HTTP %s: %s", response.status_code, response.text[:200])
-        if settings.MAXMIND_FAIL_OPEN:
-            return
-        raise HTTPException(status_code=503, detail="خدمة التحقق غير متاحة مؤقتاً. حاول مرة أخرى.")
+        return IpValidationResult(
+            allowed=settings.MAXMIND_FAIL_OPEN,
+            provider="maxmind",
+            reason=f"maxmind_http_{response.status_code}",
+        )
 
     data = response.json()
     country = (data.get("country") or {}).get("iso_code")
     if country != "SA":
-        logger.info("Order blocked: country %s for IP %s", country, client_ip)
-        raise HTTPException(status_code=403, detail=_GEO_REJECT_DETAIL)
+        logger.info("Traffic blocked: country %s for IP %s", country, client_ip)
+        return IpValidationResult(
+            allowed=False,
+            country_code=country,
+            provider="maxmind",
+            reason="non_sa_country",
+        )
 
     traits = data.get("traits") or {}
     reason = _traits_block_reason(traits)
@@ -192,5 +263,54 @@ async def assert_ip_allowed_for_order(
         reason = _anonymizer_block_reason(data.get("anonymizer") or {})
 
     if reason:
-        logger.info("Order blocked: %s (IP %s)", reason, client_ip)
-        raise HTTPException(status_code=403, detail=_GEO_REJECT_DETAIL)
+        logger.info("Traffic blocked: %s (IP %s)", reason, client_ip)
+        return IpValidationResult(
+            allowed=False,
+            country_code=country,
+            provider="maxmind",
+            reason=reason,
+        )
+
+    secondary = await _check_secondary_vpn_provider(client_ip)
+    if not secondary.allowed:
+        return IpValidationResult(
+            allowed=False,
+            country_code=country,
+            provider=secondary.provider,
+            reason=secondary.reason,
+        )
+
+    provider = "maxmind"
+    if settings.SECONDARY_VPN_CHECK_URL:
+        provider = "maxmind+secondary_vpn"
+    return IpValidationResult(allowed=True, country_code=country, provider=provider)
+
+
+async def assert_ip_allowed_for_order(
+    client_ip: Optional[str],
+    phone_e164: str,
+) -> None:
+    """
+    Geo + anonymizer gate for COD orders: KSA only, no VPN/proxy/tor/hosting (optional), risk score below threshold.
+    Bypass list skips all checks (for trusted test numbers in production).
+    Set SKIP_ORDER_GEO_CHECK=true to skip MaxMind for all phones (testing / leads).
+    In development, checks are skipped if MaxMind credentials are unset. In production, missing credentials block orders (except bypass phones).
+    """
+    if phone_bypasses_geo_check(phone_e164):
+        logger.info(
+            "Geo check skipped for bypass-listed phone %s", mask_phone(phone_e164)
+        )
+        return
+    result = await evaluate_ip_for_ksa_traffic(client_ip)
+    if result.allowed:
+        return
+    if result.reason in {
+        "maxmind_credentials_missing",
+        "maxmind_request_failed",
+        "maxmind_auth_rejected",
+    } or (result.reason or "").startswith("maxmind_http_"):
+        raise HTTPException(
+            status_code=503,
+            detail="خدمة التحقق غير متاحة مؤقتاً. حاول مرة أخرى.",
+        )
+    raise HTTPException(status_code=403, detail=_GEO_REJECT_DETAIL)

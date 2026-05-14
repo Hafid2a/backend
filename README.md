@@ -171,13 +171,13 @@ alembic history
   "customer_name": "محمد عبدالله",
   "phone": "0512345678",
   "items": [
-    { "product_id": "najd-thabat-al-khat", "offer_qty": 2, "price_sar": 279 }
+    { "product_id": "face-primer", "offer_qty": 2, "price_sar": 279 }
   ],
   "utm": { "utm_source": "tiktok", "utm_medium": "paid" },
   "click_ids": { "ttclid": "abc123" },
   "browser": { "user_agent": "Mozilla/5.0...", "fbp": "_fbp_..." },
   "event_ids": { "purchase": "uuid-v4-here" },
-  "landing_page": "https://najdofficial.com/products/najd-thabat-al-khat"
+  "landing_page": "https://najdofficial.com/products/face-primer"
 }
 ```
 

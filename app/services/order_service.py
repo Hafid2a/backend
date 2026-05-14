@@ -20,17 +20,17 @@ logger = logging.getLogger("najd")
 OFFER_PRICE_TABLE: dict[int, int] = {1: 199, 2: 279, 3: 349}
 
 UPSELL_MAP: dict[str, str] = {
-    "najd-thabat-al-khat": "najd-safa-al-jabha",
-    "najd-darag-al-nahar": "najd-thabat-al-khat",
-    "najd-safa-al-jabha": "najd-darag-al-nahar",
+    "face-primer": "forehead-serum",
+    "face-sunscreen-spf50": "face-primer",
+    "forehead-serum": "face-sunscreen-spf50",
 }
 
 UPSELL_PRICE = 99
 
 PRODUCT_NAMES: dict[str, str] = {
-    "najd-thabat-al-khat": "نجد ثبات الخط",
-    "najd-darag-al-nahar": "نجد درع النهار",
-    "najd-safa-al-jabha": "نجد صفاء الجبهة",
+    "face-primer": "ثبات الخط",
+    "face-sunscreen-spf50": "درع النهار",
+    "forehead-serum": "صفاء الجبهة",
 }
 
 

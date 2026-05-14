@@ -68,17 +68,19 @@
 
 | Slug | SKU | Name (ar) | Hero image |
 |---|---|---|---|
-| `najd-thabat-al-khat` | NAJD-STAY-PRIMER | نجد ثبات الخط | `hero-lifestyle-vanity.png` |
-| `najd-darag-al-nahar` | NAJD-DAY-SPF-50 | نجد درع النهار | `hero-promo.png` |
-| `najd-safa-al-jabha` | NAJD-HAIRLINE-SERUM | نجد صفاء الجبهة | `hero-promo.png` |
+| `face-primer` | NAJD-STAY-PRIMER | ثبات الخط | `hero-lifestyle-vanity.png` |
+| `face-sunscreen-spf50` | NAJD-DAY-SPF-50 | درع النهار | `hero-promo.png` |
+| `forehead-serum` | NAJD-HAIRLINE-SERUM | صفاء الجبهة | `hero-promo.png` |
 
 **Offers (kollshi nfs l-prix)**: 1 × 199 SAR · 2 × 279 SAR · 3 × 349 SAR · upsell 99 SAR
 
 **Upsell rotation** (`app/services/order_service.py`):
 
-- thabat-al-khat → safa-al-jabha
-- darag-al-nahar → thabat-al-khat
-- safa-al-jabha → darag-al-nahar
+- face-primer → forehead-serum
+- face-sunscreen-spf50 → face-primer
+- forehead-serum → face-sunscreen-spf50
+
+**URL / DB migration:** الـ slug القديم (`najd-thabat-al-khat` وحدودو) بدّلات. الباكند: تشغّل `alembic upgrade head` (هجرة `003_rename_product_slugs`). الفرونت: اعمل إعادة تسمية لمجلّدات الصور تحت `public/products/` لتطابق الـ slugs الجديدة؛ الروابط القديمة ديال المتجر تنحوّل تلقائياً (`redirects` فـ `next.config.ts`).
 
 ---
 
@@ -253,7 +255,7 @@ Then redeploy backend (seed runs on startup).
 
 **What was done:**
 
-1. ✅ Restored the original 3-product Najd lineup (thabat-al-khat, darag-al-nahar, safa-al-jabha) — backend seed + frontend config + 14 product PNGs + all copy.
+1. ✅ Restored the original 3-product Najd lineup (face-primer, face-sunscreen-spf50, forehead-serum) — backend seed + frontend config + 14 product PNGs + all copy.
 2. ✅ Hero images updated to latest brand assets (LANBENA acne ref, KSA vanity lifestyle, SKINEVER SPF50 ref).
 3. ✅ Soft-deactivated obsolete night-mask products (preserves order history).
 4. ✅ Auto-deploy webhooks wired (push main → Easypanel rebuilds within 30s).
