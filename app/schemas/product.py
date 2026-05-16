@@ -22,6 +22,7 @@ class ProductOut(BaseModel):
     name_ar: str
     name_en: str
     short_description_ar: Optional[str] = None
+    hero_image_url: str
     status: str
     offers: List[ProductOfferOut] = []
 

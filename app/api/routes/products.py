@@ -1,10 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import case, select
 from sqlalchemy.orm import selectinload
 from app.db.session import get_db
 from app.db.models import Product
+from app.db.seed import PRODUCTS_SEED
 from app.schemas.product import ProductOut
+
+
+_DISPLAY_ORDER_CASE = case(
+    *((Product.slug == p["slug"], i) for i, p in enumerate(PRODUCTS_SEED)),
+    else_=999,
+)
 
 router = APIRouter(prefix="/products", tags=["products"])
 
@@ -20,7 +27,7 @@ async def list_products(db: AsyncSession = Depends(get_db)) -> list[Product]:
         select(Product)
         .where(Product.status == "active")
         .options(selectinload(Product.offers))
-        .order_by(Product.created_at)
+        .order_by(_DISPLAY_ORDER_CASE, Product.created_at)
     )
     products = result.scalars().all()
     return list(products)

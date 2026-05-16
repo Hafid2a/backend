@@ -68,9 +68,9 @@
 
 | Slug | SKU | Name (ar) | Hero image |
 |---|---|---|---|
-| `face-primer` | NAJD-STAY-PRIMER | ثبات الخط | `hero-lifestyle-vanity.png` |
-| `face-sunscreen-spf50` | NAJD-DAY-SPF-50 | درع النهار | `hero-promo.png` |
-| `forehead-serum` | NAJD-HAIRLINE-SERUM | صفاء الجبهة | `hero-promo.png` |
+| `face-primer` | NAJD-STAY-PRIMER | ثبات الخط | `/static/products/face-primer/hero.png` |
+| `face-sunscreen-spf50` | NAJD-DAY-SPF-50 | درع النهار | `/static/products/face-sunscreen-spf50/hero.png` |
+| `forehead-serum` | NAJD-HAIRLINE-SERUM | صفاء الجبهة | `/static/products/forehead-serum/hero.png` |
 
 **Offers (kollshi nfs l-prix)**: 1 × 199 SAR · 2 × 279 SAR · 3 × 349 SAR · upsell 99 SAR
 

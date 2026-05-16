@@ -32,6 +32,10 @@ class Product(Base):
         order_by="ProductOffer.sort_order",
     )
 
+    @property
+    def hero_image_url(self) -> str:
+        return f"/static/products/{self.slug}/hero.png"
+
 
 class ProductOffer(Base):
     __tablename__ = "product_offers"

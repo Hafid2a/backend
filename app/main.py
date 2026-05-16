@@ -2,6 +2,8 @@ from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from app.core.config import settings
 from app.core.logging import setup_logging
 from app.db.session import AsyncSessionLocal
@@ -32,6 +34,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+@app.get("/", include_in_schema=False)
+async def storefront() -> FileResponse:
+    return FileResponse("static/index.html")
 
 app.include_router(health.router)
 app.include_router(products.router)

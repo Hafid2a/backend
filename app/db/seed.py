@@ -9,11 +9,11 @@ logger = logging.getLogger("najd")
 
 PRODUCTS_SEED = [
     {
-        "slug": "face-primer",
-        "sku": "NAJD-STAY-PRIMER",
-        "name_ar": "ثبات الخط",
-        "name_en": "Face primer",
-        "short_description_ar": "برايمر خفيف قبل الأساس يهدف تثبيت مظهر الطبقة وتخفيف اللمعة الخارجية مع الحرّ والتكييف والإيشارب.",
+        "slug": "face-sunscreen-spf50",
+        "sku": "NAJD-DAY-SPF-50",
+        "name_ar": "درع النهار",
+        "name_en": "SPF 50+ face sunscreen",
+        "short_description_ar": "حاجز ضدّ الأشعة: هدفه يقلّل التعرّض للأشعة فوق البنفسجية — الفاعلية والتصنيف حسب ما هو معلن على التغليف.",
         "status": "active",
         "offers": [
             {"quantity": 1, "price_sar": 199, "compare_at_sar": None, "label_ar": "عبوّة واحدة", "badge_ar": None, "sort_order": 0},
@@ -22,11 +22,11 @@ PRODUCTS_SEED = [
         ],
     },
     {
-        "slug": "face-sunscreen-spf50",
-        "sku": "NAJD-DAY-SPF-50",
-        "name_ar": "درع النهار",
-        "name_en": "SPF 50+ face sunscreen",
-        "short_description_ar": "واقٍ للوجه بملمس أخف: حماية يومية من الشمس وفق التغليف، مع إحساس أقل بالثقل تحت المكياج.",
+        "slug": "face-primer",
+        "sku": "NAJD-STAY-PRIMER",
+        "name_ar": "ثبات الخط",
+        "name_en": "Face primer",
+        "short_description_ar": "برايمر خفيف قبل الأساس يهدف تثبيت مظهر الطبقة وتخفيف اللمعة الخارجية مع الحرّ والتكييف والإيشارب.",
         "status": "active",
         "offers": [
             {"quantity": 1, "price_sar": 199, "compare_at_sar": None, "label_ar": "عبوّة واحدة", "badge_ar": None, "sort_order": 0},
