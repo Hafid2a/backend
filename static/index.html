@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>نجد | كوزميتيك للوجه تحت الإيشارب والجو</title>
+    <link rel="icon" href="logo-najd-official.png" type="image/png" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Tajawal:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="store.css" />
+  </head>
+  <body class="theme-najd">
+
+    <!-- ═══════════════════════════════════════════════════
+         STICKY HEADER
+    ═══════════════════════════════════════════════════ -->
+    <div class="site-header-wrap">
+      <header class="site-header" id="top">
+        <div class="site-header__inner">
+          <a href="#top" class="site-logo" aria-label="الرئيسية — نجد NAJD Official">
+            <span class="site-logo__mark">
+              <img
+                class="site-logo__img"
+                src="logo-najd-official.png"
+                alt=""
+                width="56"
+                height="56"
+                decoding="async"
+                fetchpriority="high"
+              />
+            </span>
+            <span class="site-logo__text">
+              <span class="site-logo__ar">نجد</span>
+              <span class="site-logo__en" lang="en">NAJD Official</span>
+            </span>
+          </a>
+          <nav class="site-nav" aria-label="التنقل" dir="rtl">
+            <a href="#top">الرئيسية</a>
+            <a href="#products">المجموعة</a>
+            <a href="#science">المكوّنات</a>
+            <a href="#reviews">التقييمات</a>
+            <a href="#why">عن نجد</a>
+            <a href="#contact">تواصل</a>
+          </nav>
+          <a class="site-cart" href="#products" aria-label="السلة">
+            <span class="site-cart__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 6h15l-1.5 9h-12z" />
+                <path d="M6 6 5 3H2" />
+                <circle cx="9" cy="20" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="18" cy="20" r="1.5" fill="currentColor" stroke="none" />
+              </svg>
+            </span>
+            <span class="site-cart__count" aria-hidden="true">0</span>
+          </a>
+        </div>
+      </header>
+      <p class="site-announcement" role="status">
+        <span class="site-announcement__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="m9 12 2 2 4-4" />
+          </svg>
+        </span>
+        <span class="site-announcement__text" id="announcementText">فحص وتغليف قبل خروج الطلب</span>
+      </p>
+    </div>
+
+    <main class="store">
+      <div class="page-rings" aria-hidden="true">
+        <span class="page-rings__tl"></span>
+        <span class="page-rings__br"></span>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════
+           SECTION 1 — HERO
+      ═══════════════════════════════════════════════════ -->
+      <section class="hero hero--nama" aria-label="واجهة متجر نجد">
+        <div class="visual-card visual-card--nama">
+          <div class="product-stage" id="heroProducts" aria-label="منتجات نجد">
+            <div class="brand brand--nama">
+              <img
+                class="brand__logo"
+                src="logo-najd-official.png"
+                alt=""
+                decoding="async"
+              />
+              <span class="brand__tagline">نجد للعناية</span>
+            </div>
+            <div class="cosmetic-set" aria-hidden="true">
+              <div class="tube tube--spf"></div>
+              <div class="bottle bottle--serum"></div>
+              <div class="bottle bottle--primer"></div>
+            </div>
+            <div class="botanical botanical--left"></div>
+            <div class="botanical botanical--right"></div>
+          </div>
+
+          <div class="sfda-ribbon" role="note">
+            <span class="sfda-ribbon__shield" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2 4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5l-8-3z"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+            </span>
+            <span class="sfda-ribbon__text">
+              <small lang="en">SFDA Licensed</small>
+              <strong>مرخّص من الغذاء والدواء</strong>
+            </span>
+          </div>
+        </div>
+
+        <div class="copy-card copy-card--nama">
+          <div class="nama-eyebrow">
+            <span class="nama-eyebrow__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2 4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5l-8-3z"/>
+              </svg>
+            </span>
+            <span>صيدلية الجمال السعودية · مرخّصة SFDA</span>
+          </div>
+
+          <h1 class="hero-title--nama">
+            <span>كوزميتيك سعودي</span>
+            <span>للوجه تحت الإيشارب والجو</span>
+          </h1>
+
+          <p class="lead lead--nama">
+            ثلاث منتجات مدروسة للوجه — برايمر يثبّت المكياج، واقٍ SPF 50 بملمس خفيف لا يبيّض، وسيروم موضّع للجبهة. الدفع عند الاستلام وضمان 30 يوم.
+          </p>
+
+          <div class="hero-counter" aria-label="عدد الطلبات المؤكّدة">
+            <div class="avatars" aria-hidden="true">
+              <span>د</span><span>ش</span><span>س</span><span>ر</span>
+            </div>
+            <div class="hero-counter__text">
+              <strong>+٨٤٧</strong>
+              <span>طلب مؤكّد هذا الشهر</span>
+            </div>
+          </div>
+
+          <div class="nama-chips" role="list">
+            <div class="nama-chip" role="listitem">
+              <strong>SFDA</strong>
+              <small>مرخّص رسمياً</small>
+            </div>
+            <div class="nama-chip" role="listitem">
+              <strong>حلال</strong>
+              <small>تركيبة آمنة</small>
+            </div>
+            <div class="nama-chip" role="listitem">
+              <strong>GMP</strong>
+              <small>تصنيع طبي</small>
+            </div>
+            <div class="nama-chip" role="listitem">
+              <strong>30 يوم</strong>
+              <small>ضمان استرجاع</small>
+            </div>
+          </div>
+
+          <div class="hero-cta">
+            <a class="button button--primary button--arrow button--lg" href="#products">اختاري منتجك الآن</a>
+            <span class="hero-cta__pill">
+              <span class="hero-cta__pill-icon" aria-hidden="true">↻</span>
+              ضمان استرجاع 30 يوم
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════
+           SECTION 2 — TRUST BAR
+      ═══════════════════════════════════════════════════ -->
+      <div class="trust-bar" role="list" aria-label="ضمانات المتجر">
+        <div class="trust-bar__item" role="listitem">
+          <span class="trust-bar__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2 4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5l-8-3z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+          </span>
+          <span>مرخّص SFDA</span>
+        </div>
+        <span class="trust-bar__divider" aria-hidden="true"></span>
+        <div class="trust-bar__item" role="listitem">
+          <span class="trust-bar__icon" aria-hidden="true">🌿</span>
+          <span>حلال · GMP</span>
+        </div>
+        <span class="trust-bar__divider" aria-hidden="true"></span>
+        <div class="trust-bar__item" role="listitem">
+          <span class="trust-bar__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><path d="M9 12l2 2 4-4"/>
+            </svg>
+          </span>
+          <span>ضمان رضا 30 يوم</span>
+        </div>
+        <span class="trust-bar__divider" aria-hidden="true"></span>
+        <div class="trust-bar__item" role="listitem">
+          <span class="trust-bar__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 4v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+            </svg>
+          </span>
+          <span>توصيل داخل المملكة</span>
+        </div>
+        <span class="trust-bar__divider" aria-hidden="true"></span>
+        <div class="trust-bar__item" role="listitem">
+          <span class="trust-bar__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>
+            </svg>
+          </span>
+          <span>الدفع عند الاستلام</span>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════
+           SECTION 3 — PROBLEMS → SOLUTIONS
+      ═══════════════════════════════════════════════════ -->
+      <section class="split-section" id="problems" aria-labelledby="problems-title">
+        <div class="section-heading">
+          <p>ابدئي من مشكلتك</p>
+          <h2 id="problems-title">ثلاث مشاكل يومية — ثلاث حلول واضحة</h2>
+        </div>
+        <div class="problem-grid">
+
+          <article class="problem-card">
+            <div class="problem-card__top">
+              <span class="problem-card__icon" aria-hidden="true">✨</span>
+              <p class="problem-card__tag">مشكلة · الثبات</p>
+              <h3>المكياج يذوب ويتشقّق بسرعة</h3>
+              <p>الحرّ والرطوبة والتكييف طول النهار يكسّرون الأساس — تحتاجين طبقة أولى تهيّئ البشرة وتثبّت المكياج بصرياً.</p>
+            </div>
+            <div class="problem-card__solution">
+              <span class="problem-card__solution-label">الحل في نجد</span>
+              <strong class="problem-card__solution-name">ثبات الخط — برايمر الوجه</strong>
+              <span class="problem-card__solution-note">يهيّئ البشرة ويثبّت الأساس ساعات أطول</span>
+              <a href="#face-primer" class="problem-card__solution-link">اطّلعي على ثبات الخط ←</a>
+            </div>
+          </article>
+
+          <article class="problem-card">
+            <div class="problem-card__top">
+              <span class="problem-card__icon" aria-hidden="true">☀️</span>
+              <p class="problem-card__tag">مشكلة · الحماية</p>
+              <h3>الواقي يثقل ويبيّض وجهي في الصور</h3>
+              <p>الشمس والتكييف يحتّون واقٍ يومي — بس الواقيات الثقيلة تكسر الأساس وتبيّض في الإضاءة والصور.</p>
+            </div>
+            <div class="problem-card__solution">
+              <span class="problem-card__solution-label">الحل في نجد</span>
+              <strong class="problem-card__solution-name">درع النهار — SPF 50</strong>
+              <span class="problem-card__solution-note">ملمس خفيف لا يبيّض · مناسب تحت الفونداشن</span>
+              <a href="#face-sunscreen-spf50" class="problem-card__solution-link">اطّلعي على درع النهار ←</a>
+            </div>
+          </article>
+
+          <article class="problem-card">
+            <div class="problem-card__top">
+              <span class="problem-card__icon" aria-hidden="true">💧</span>
+              <p class="problem-card__tag">مشكلة · خط الجبهة</p>
+              <h3>حبوب صغيرة وخشونة حوالين الجبهة</h3>
+              <p>الحرّ والعرق والضغط تحت الإيشارب يغيّرون ملمس الجبهة — تحتاجين حل موضّع لا كريم عام للوجه.</p>
+            </div>
+            <div class="problem-card__solution">
+              <span class="problem-card__solution-label">الحل في نجد</span>
+              <strong class="problem-card__solution-name">صفاء الجبهة — سيروم موضّع</strong>
+              <span class="problem-card__solution-note">يهيّئ الملمس ويلطّف الخشونة والحبوب الزغيرة</span>
+              <a href="#forehead-serum" class="problem-card__solution-link">اطّلعي على صفاء الجبهة ←</a>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════
+           SECTION 4 — PRODUCTS
+      ═══════════════════════════════════════════════════ -->
+      <section class="products-section" id="products" aria-label="منتجات المتجر">
+        <div class="section-heading">
+          <p>مجموعة نجد</p>
+          <h2>اختاري حسب مشكلتك — أو الروتين كامل</h2>
+        </div>
+        <p class="section-lead">كل منتج يشرح وظيفته بوضوح · الدفع عند الاستلام · ضمان 30 يوم</p>
+        <div class="product-grid" id="productGrid"></div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════
+           SECTION 5 — SCIENCE / INGREDIENTS
+      ═══════════════════════════════════════════════════ -->
+      <section class="science-section" id="science" aria-labelledby="science-title">
+        <div class="section-heading">
+          <p>العلم خلف كل منتج</p>
+          <h2 id="science-title">مكوّنات مختارة لكل مشكلة</h2>
+        </div>
+        <p class="section-lead">نختار كل مكوّن بناءً على ما يفعله فعلاً — لا بناءً على الاسم اللامع فقط</p>
+
+        <div class="science-grid">
+
+          <article class="science-card">
+            <header class="science-card__header">
+              <span class="science-card__dot" aria-hidden="true">☀️</span>
+              <div>
+                <strong class="science-card__name">درع النهار</strong>
+                <span class="science-card__sub" lang="en">SPF 50 · Face Sunscreen</span>
+              </div>
+            </header>
+            <div class="science-ingredients">
+              <div class="science-ingredient">
+                <div class="science-ingredient__labels">
+                  <span class="science-ingredient__en" lang="en">Zinc Oxide</span>
+                  <span class="science-ingredient__ar">أكسيد الزنك</span>
+                </div>
+                <p class="science-ingredient__note">حاجز فيزيائي يعكس الأشعة UVA/UVB — لا يتراكم في المسامات ولا يثقل على البشرة</p>
+              </div>
+              <div class="science-ingredient">
+                <div class="science-ingredient__labels">
+                  <span class="science-ingredient__en" lang="en">Niacinamide B3</span>
+                  <span class="science-ingredient__ar">نياسيناميد — فيتامين B3</span>
+                </div>
+                <p class="science-ingredient__note">يوحّد لون البشرة ويقلّل ظهور المسامات ويهدّئ الاحمرار الخفيف</p>
+              </div>
+              <div class="science-ingredient">
+                <div class="science-ingredient__labels">
+                  <span class="science-ingredient__en" lang="en">Vitamin E · Tocopherol</span>
+                  <span class="science-ingredient__ar">فيتامين E · توكوفيرول</span>
+                </div>
+                <p class="science-ingredient__note">مضاد أكسدة يحمي البشرة من تأثير الأشعة والتلوث اليومي</p>
+              </div>
+            </div>
+            <a href="#face-sunscreen-spf50" class="science-card__link">اطّلعي على درع النهار ←</a>
+          </article>
+
+          <article class="science-card">
+            <header class="science-card__header">
+              <span class="science-card__dot" aria-hidden="true">✨</span>
+              <div>
+                <strong class="science-card__name">ثبات الخط</strong>
+                <span class="science-card__sub" lang="en">Face Primer · Makeup Base</span>
+              </div>
+            </header>
+            <div class="science-ingredients">
+              <div class="science-ingredient">
+                <div class="science-ingredient__labels">
+                  <span class="science-ingredient__en" lang="en">Dimethicone</span>
+                  <span class="science-ingredient__ar">ديميثيكون</span>
+                </div>
+                <p class="science-ingredient__note">يملّس سطح البشرة ويملأ المسامات بصرياً — يمنح الأساس سطحاً ثابتاً</p>
+              </div>
+              <div class="science-ingredient">
+                <div class="science-ingredient__labels">
+                  <span class="science-ingredient__en" lang="en">Kaolin Clay</span>
+                  <span class="science-ingredient__ar">طين الكاولين</span>
+                </div>
+                <p class="science-ingredient__note">يمتص الزيت الزائد ويقلّل اللمعة — مثالي للجو الحار والرطب</p>
+              </div>
+              <div class="science-ingredient">
+                <div class="science-ingredient__labels">
+                  <span class="science-ingredient__en" lang="en">Hyaluronic Acid</span>
+                  <span class="science-ingredient__ar">حمض الهيالورونيك</span>
+                </div>
+                <p class="science-ingredient__note">يحافظ على رطوبة البشرة أثناء التثبيت — بدون جفاف أو احمرار</p>
+              </div>
+            </div>
+            <a href="#face-primer" class="science-card__link">اطّلعي على ثبات الخط ←</a>
+          </article>
+
+          <article class="science-card">
+            <header class="science-card__header">
+              <span class="science-card__dot" aria-hidden="true">💧</span>
+              <div>
+                <strong class="science-card__name">صفاء الجبهة</strong>
+                <span class="science-card__sub" lang="en">Forehead Serum · Targeted</span>
+              </div>
+            </header>
+            <div class="science-ingredients">
+              <div class="science-ingredient">
+                <div class="science-ingredient__labels">
+                  <span class="science-ingredient__en" lang="en">Salicylic Acid · BHA</span>
+                  <span class="science-ingredient__ar">حمض الساليسيليك</span>
+                </div>
+                <p class="science-ingredient__note">يتغلغل في المسامات ويقشّر بلطف — يساعد في تنظيف الحبوب الصغيرة</p>
+              </div>
+              <div class="science-ingredient">
+                <div class="science-ingredient__labels">
+                  <span class="science-ingredient__en" lang="en">Niacinamide B3</span>
+                  <span class="science-ingredient__ar">نياسيناميد — فيتامين B3</span>
+                </div>
+                <p class="science-ingredient__note">يوحّد لون البشرة ويضيّق مظهر المسامات ويقلّل الاحمرار</p>
+              </div>
+              <div class="science-ingredient">
+                <div class="science-ingredient__labels">
+                  <span class="science-ingredient__en" lang="en">Centella Asiatica</span>
+                  <span class="science-ingredient__ar">سينتيلا آسياتيكا</span>
+                </div>
+                <p class="science-ingredient__note">تهدئة وتقليل الالتهاب الخفيف — مناسبة لبشرة الجبهة الحساسة تحت الإيشارب</p>
+              </div>
+            </div>
+            <a href="#forehead-serum" class="science-card__link">اطّلعي على صفاء الجبهة ←</a>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════
+           SECTION 6 — REVIEWS (moved up)
+      ═══════════════════════════════════════════════════ -->
+      <section class="reviews-section" id="reviews" aria-labelledby="reviews-title">
+        <div class="section-heading">
+          <div class="reviews-aggregate" aria-label="متوسط التقييم">
+            <span class="reviews-aggregate__stars" aria-hidden="true">★★★★★</span>
+            <strong class="reviews-aggregate__score">4.8</strong>
+            <span class="reviews-aggregate__count">· 127 تقييم مؤكّد</span>
+          </div>
+          <p>من تجارب العملاء</p>
+          <h2 id="reviews-title">ماذا قلن بعد التجربة</h2>
+        </div>
+        <div class="review-grid">
+
+          <figure class="review-card">
+            <div class="review-card__top">
+              <div class="review-avatar" aria-hidden="true">ش</div>
+              <div>
+                <div class="review-card__stars" aria-hidden="true">★★★★★</div>
+                <figcaption>
+                  <strong>شهد</strong> · الخبر
+                  <span class="review-verified">مشترية مؤكّدة · درع النهار</span>
+                </figcaption>
+              </div>
+            </div>
+            <blockquote>ما حسّيتُه يبيّض وجهي زي بعض الواقيات؛ مع طبقة رقيقة ماشي تحت الفونداشن بدون أي ثقل.</blockquote>
+          </figure>
+
+          <figure class="review-card">
+            <div class="review-card__top">
+              <div class="review-avatar review-avatar--alt" aria-hidden="true">د</div>
+              <div>
+                <div class="review-card__stars" aria-hidden="true">★★★★★</div>
+                <figcaption>
+                  <strong>دانة</strong> · الرياض
+                  <span class="review-verified">مشترية مؤكّدة · ثبات الخط</span>
+                </figcaption>
+              </div>
+            </div>
+            <blockquote>أهم شي إني حسّيت المكياج ما ذاب بنفس السرعة وقت الدوام الطويل مع التكييف.</blockquote>
+          </figure>
+
+          <figure class="review-card">
+            <div class="review-card__top">
+              <div class="review-avatar" aria-hidden="true">ر</div>
+              <div>
+                <div class="review-card__stars" aria-hidden="true">★★★★★</div>
+                <figcaption>
+                  <strong>ريم</strong> · جدة
+                  <span class="review-verified">مشترية مؤكّدة · صفاء الجبهة</span>
+                </figcaption>
+              </div>
+            </div>
+            <blockquote>الجبهة أنعم وما شفت الحبوب الزغيرة بنفس الشكل — وسيروم خفيف ما يثقل تحت الإيشارب.</blockquote>
+          </figure>
+
+          <figure class="review-card">
+            <div class="review-card__top">
+              <div class="review-avatar review-avatar--alt" aria-hidden="true">ه</div>
+              <div>
+                <div class="review-card__stars" aria-hidden="true">★★★★★</div>
+                <figcaption>
+                  <strong>هيا</strong> · الدمام
+                  <span class="review-verified">مشترية مؤكّدة</span>
+                </figcaption>
+              </div>
+            </div>
+            <blockquote>الدفع عند الاستلام خلاني أجرّب بدون أي ضغط — وما ندمت. الطلب وصل مهيَّأ وبسرعة.</blockquote>
+          </figure>
+
+          <figure class="review-card">
+            <div class="review-card__top">
+              <div class="review-avatar" aria-hidden="true">ن</div>
+              <div>
+                <div class="review-card__stars" aria-hidden="true">★★★★★</div>
+                <figcaption>
+                  <strong>نورة</strong> · الرياض
+                  <span class="review-verified">مشترية مؤكّدة · درع النهار</span>
+                </figcaption>
+              </div>
+            </div>
+            <blockquote>جرّبت الواقي وحاسّة إنه خفيف فعلاً — ما حسّيت بياض ولا ثقل تحت الأساس. رح أعيد الطلب.</blockquote>
+          </figure>
+
+          <figure class="review-card review-card--wide">
+            <div class="review-card__top">
+              <div class="review-avatar review-avatar--alt" aria-hidden="true">س</div>
+              <div>
+                <div class="review-card__stars" aria-hidden="true">★★★★★</div>
+                <figcaption>
+                  <strong>سارة العتيبي</strong> · 21 سنة · الخبر
+                  <span class="review-verified">مشترية مؤكّدة · الثلاثة منتجات</span>
+                </figcaption>
+              </div>
+            </div>
+            <blockquote>ما يكفّيني مظهر العبوة — المهم إن كل منتج يشرح مشكل حقيقي: ثبات، حماية من الشمس، وخط الجبهة… والدفع عند الاستلام يبسّط قراري. جرّبت الثلاثة وما ندمت.</blockquote>
+          </figure>
+
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════
+           SECTION 7 — WHY NAJD
+      ═══════════════════════════════════════════════════ -->
+      <section class="why-section" id="why" aria-labelledby="why-title">
+        <div class="section-heading">
+          <p>ليش نجد</p>
+          <h2 id="why-title">خط متخصص — مو رفّ من العشرات</h2>
+        </div>
+        <div class="pillars-grid">
+          <article class="pillar-card">
+            <span class="pillar-card__glyph" aria-hidden="true">🧴</span>
+            <h3>كوزميتيك متخصص للوجه</h3>
+            <p>خط واحد للوجه تحت الإيشارب والجو المحلي — وصف خارجي واضح بدون ادّعاء طبي.</p>
+          </article>
+          <article class="pillar-card">
+            <span class="pillar-card__glyph" aria-hidden="true">📋</span>
+            <h3>شفافية في كل خطوة</h3>
+            <p>كل منتج يشرح مشكلة ووقت استخدام واقعيين — بدون وعود مبالغ فيها أو إعلان مضلّل.</p>
+          </article>
+          <article class="pillar-card">
+            <span class="pillar-card__glyph" aria-hidden="true">✅</span>
+            <h3>فحص جودة قبل الشحن</h3>
+            <p>التغليف يُجهَّز بحيث يصلك مهيَّأ — طلباتكم تهمّنا قبل ما تخرج من المخزن.</p>
+          </article>
+          <article class="pillar-card">
+            <span class="pillar-card__glyph" aria-hidden="true">🇸🇦</span>
+            <h3>راحة العميلة السعودية</h3>
+            <p>الدفع عند الاستلام، توصيل خلال أيام عمل، وضمان استرجاع 30 يوم — قرار أسهل ومخاطرة أقلّ.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════
+           SECTION 8 — COMPARE
+      ═══════════════════════════════════════════════════ -->
+      <section class="compare-section" id="compare" aria-labelledby="compare-title">
+        <div class="section-heading">
+          <p>قارني وقرّري</p>
+          <h2 id="compare-title">محورنا مستحضرات وجه واضحة — مو كتالوج عشوائي</h2>
+        </div>
+        <div class="compare-table-wrap">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">متجر عام</th>
+                <th scope="col">نجد</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">التركيز</th>
+                <td>عشرات المنتجات بدون خطّة وجه واحدة</td>
+                <td>ثلاث احتياجات يومية واضحة تحت الإيشارب والجو</td>
+              </tr>
+              <tr>
+                <th scope="row">الوصف</th>
+                <td>وعود عامة ومبالغ فيها أحياناً</td>
+                <td>شفّافة: وقت الاستخدام ولماذا هذه القطعة بالتحديد</td>
+              </tr>
+              <tr>
+                <th scope="row">الشراء</th>
+                <td>دفع مسبق أو إجراءات أطول</td>
+                <td>اسم ورقم؛ الدفع عند الاستلام بعد التأكيد</td>
+              </tr>
+              <tr>
+                <th scope="row">الضمان</th>
+                <td>سياسة استرجاع معقّدة أو غير واضحة</td>
+                <td>ضمان رضا 30 يوم — تواصلنا ورتّبنا</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════
+           SECTION 9 — HOW TO ORDER
+      ═══════════════════════════════════════════════════ -->
+      <section class="steps-section" id="steps" aria-labelledby="steps-title">
+        <div class="section-heading">
+          <p>طريقة الطلب</p>
+          <h2 id="steps-title">من الطلب لباب بيتكِ في <span dir="ltr">3</span> خطوات</h2>
+        </div>
+        <p class="section-lead section-lead--center">بدون دفع أونلاين · بدون التزام · تجربة بمخاطرة أقل</p>
+        <ol class="steps-list">
+          <li>
+            <span class="steps-list__num" aria-hidden="true">١</span>
+            <div>
+              <h3>اختاري روتينك</h3>
+              <p>ثلاثة منتجات لثلاث حاجات: ثبات المكياج، حماية النهار، وتهيئة خط الجبهة. وحدة أو الخطّ كامل.</p>
+            </div>
+          </li>
+          <li>
+            <span class="steps-list__num" aria-hidden="true">٢</span>
+            <div>
+              <h3>أكّدي الطلب بدون دفع</h3>
+              <p>اسم ورقم جوال؛ فريق المتابعة يتواصل لتأكيد العنوان قبل الشحن.</p>
+            </div>
+          </li>
+          <li>
+            <span class="steps-list__num" aria-hidden="true">٣</span>
+            <div>
+              <h3>استلمي وادفعي</h3>
+              <p>توصيل خلال أيام عمل داخل المملكة — نقد أو مدى وقت الاستلام حيث يتوفر.</p>
+            </div>
+          </li>
+        </ol>
+        <div class="steps-cta">
+          <a class="button button--primary" href="#products">ابدئي طلبك الآن</a>
+          <span class="steps-cta__meta">ضمان استرجاع 30 يوم · شحن داخل السعودية</span>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════
+           SECTION 10 — FAQ
+      ═══════════════════════════════════════════════════ -->
+      <section class="faq-section" id="faq" aria-labelledby="faq-title">
+        <div class="section-heading">
+          <p>أسئلة سريعة</p>
+          <h2 id="faq-title">كل ما تحتاجينه قبل الطلب</h2>
+        </div>
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary>هل عندكم ضمان استرجاع؟</summary>
+            <p>ضمان رضا 30 يوم. إذا ما لمسّتي فرقاً مناسباً وفق تجربتك، تواصلنا نرتّب الاسترداد وفق سياسة المتجر.</p>
+          </details>
+          <details class="faq-item">
+            <summary>هل الدفع عند الاستلام متاح؟</summary>
+            <p>نعم — نكمّل عنوانك على الجوال، والدفع عند الاستلام حيث يخدم الناقل أو المنطقة.</p>
+          </details>
+          <details class="faq-item">
+            <summary>كم يستغرق التوصيل؟</summary>
+            <p>عادة بين <span dir="ltr">2</span> و<span dir="ltr">5</span> أيام عمل حسب المدينة والمنطقة، مع تنسيق وقت التسليم عند تأكيد الطلب.</p>
+          </details>
+          <details class="faq-item">
+            <summary>للبشرة الحساسة — هل المنتجات مناسبة؟</summary>
+            <p>المنتجات مستحضرات تجميلية خارجية بمكوّنات مختارة بحيث تكون خفيفة. إذا كانت لديكِ حساسية معيّنة لمكوّن بعينه، راجعي قائمة المكوّنات أو استشيري طبيبك قبل الاستخدام.</p>
+          </details>
+          <details class="faq-item">
+            <summary>هل يمكن الجمع بين أكثر من منتج؟</summary>
+            <p>نعم — ثلاثتها مصمّمة للعمل معاً. الترتيب المُوصى به: صفاء الجبهة (للمنطقة المستهدفة) → ثبات الخط (برايمر) → درع النهار (واقي) → الفونداشن.</p>
+          </details>
+          <details class="faq-item">
+            <summary>هل المنتجات «علاج طبّي»؟</summary>
+            <p>لا — مستحضرات تجميلية خارجية بوصف صريح على الغلاف. ما نعدّ منتجاتنا بديل تشخيص أو وصف طبّي.</p>
+          </details>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════
+           SECTION 11 — FINAL CTA
+      ═══════════════════════════════════════════════════ -->
+      <section class="final-cta-section" aria-label="اطلبي الآن">
+        <div class="final-cta__inner">
+          <p class="final-cta__eyebrow">جاهزة تجرّبين بدون مخاطرة؟</p>
+          <h2 class="final-cta__title">اطلبي — وادفعي بس لمّا يوصل</h2>
+          <p class="final-cta__sub">ضمان رضا 30 يوم · الدفع عند الاستلام · فحص وتغليف قبل الشحن</p>
+          <a class="button button--primary final-cta__btn" href="#products">اختاري منتجك الآن ←</a>
+          <div class="final-cta__badges" role="list">
+            <span role="listitem">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5l-8-3z"/><path d="m9 12 2 2 4-4"/></svg>
+              SFDA مرخّص
+            </span>
+            <span role="listitem">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+              حلال · GMP
+            </span>
+            <span role="listitem">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+              ضمان 30 يوم
+            </span>
+            <span role="listitem">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+              دفع عند الاستلام
+            </span>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ═══════════════════════════════════════════════════
+         FOOTER
+    ═══════════════════════════════════════════════════ -->
+    <footer class="site-footer" id="contact">
+      <div class="site-footer__grid">
+        <div>
+          <p class="site-footer__brand"><span lang="en">NAJD</span> نجد</p>
+          <p class="site-footer__text">
+            خط كوزميتيك خارجي بوصف واضح على الغلاف — للوجه تحت الإيشارب والجو. مرخّص SFDA · حلال · GMP.
+          </p>
+        </div>
+        <div>
+          <p class="site-footer__head">منتجات</p>
+          <ul class="site-footer__links">
+            <li><a href="#face-primer">ثبات الخط</a></li>
+            <li><a href="#face-sunscreen-spf50">درع النهار</a></li>
+            <li><a href="#forehead-serum">صفاء الجبهة</a></li>
+            <li><a href="#products">كل المنتجات</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="site-footer__head">روابط سريعة</p>
+          <ul class="site-footer__links">
+            <li><a href="#science">المكوّنات</a></li>
+            <li><a href="#reviews">التقييمات</a></li>
+            <li><a href="#why">ليش نجد</a></li>
+            <li><a href="#faq">الأسئلة</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="site-footer__copy">© 2026 متجر نجد — خط كوزميتيك سعودي. الحقوق محجوزة.</p>
+    </footer>
+
+    <!-- ═══════════════════════════════════════════════════
+         STICKY BOTTOM CTA (appears after scrolling past hero)
+    ═══════════════════════════════════════════════════ -->
+    <div class="sticky-cta" id="stickyCta" role="complementary" aria-label="اطلبي بسرعة">
+      <div class="sticky-cta__inner">
+        <div class="sticky-cta__left">
+          <strong class="sticky-cta__name">اطلبي الآن</strong>
+          <span class="sticky-cta__sub">الدفع عند الاستلام · ضمان 30 يوم</span>
+        </div>
+        <a class="button button--primary sticky-cta__btn" href="#products">اختاري منتجك</a>
+      </div>
+    </div>
+
+    <script src="store.js" defer></script>
+  </body>
+</html>

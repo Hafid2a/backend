@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="nj" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#b73964"/>
+      <stop offset="100%" stop-color="#a32d57"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="10" fill="url(#nj)"/>
+  <!-- لمعة عبوة كوزميتيك -->
+  <ellipse cx="11" cy="10" rx="9" ry="6.5" fill="#ffffff" opacity="0.14"/>
+  <!-- بريق جمال -->
+  <path
+    d="M26 6v2h2v1h-2v2h-1v-2h-2V8h2V6zM7 23l0.7 1.6 1.6 0.7-1.6 0.7L7 27.6l-0.7-1.6-1.6-0.7 1.6-0.7z"
+    fill="#fff"
+    opacity="0.85"
+  />
+  <circle cx="5.5" cy="12.5" r="1.1" fill="#fff" opacity="0.45"/>
+  <!-- قطرة خفيفة (سيروم / عناية) -->
+  <path d="M24 24c0 1.8-1.3 2.8-2.6 2.8S19 25.8 19 24s2.1-4 2.7-4 2.3 3.2 2.3 4z" fill="#fff" opacity="0.28"/>
+  <path
+    d="M10 23V9M10 9l12 14M22 9v14"
+    fill="none"
+    stroke="#fff"
+    stroke-width="2.4"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>
