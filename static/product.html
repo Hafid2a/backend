@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>تفاصيل المنتج | نجد</title>
+    <link rel="icon" href="logo-najd-official.png" type="image/png" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Tajawal:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="store.css" />
+
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1956891195007947');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1956891195007947&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+  </head>
+  <body class="theme-najd">
+    <!-- STICKY HEADER -->
+    <div class="site-header-wrap">
+      <header class="site-header" id="top">
+        <div class="site-header__inner">
+          <a href="index.html" class="site-logo" aria-label="الرئيسية — نجد NAJD Official">
+            <span class="site-logo__mark">
+              <img
+                class="site-logo__img"
+                src="logo-najd-official.png"
+                alt=""
+                width="56"
+                height="56"
+                decoding="async"
+              />
+            </span>
+            <span class="site-logo__text">
+              <span class="site-logo__ar">نجد</span>
+              <span class="site-logo__en" lang="en">NAJD Official</span>
+            </span>
+          </a>
+          <nav class="site-nav" aria-label="التنقل" dir="rtl">
+            <a href="index.html">الرئيسية</a>
+            <a href="index.html#products">المجموعة</a>
+          </nav>
+        </div>
+      </header>
+    </div>
+
+    <main class="store">
+      <div class="page-rings" aria-hidden="true">
+        <span class="page-rings__tl"></span>
+        <span class="page-rings__br"></span>
+      </div>
+
+      <!-- PRODUCT DETAILS -->
+      <section class="product-details-section" id="productDetails" aria-label="تفاصيل المنتج">
+        <!-- Will be populated by JS -->
+        <div style="text-align: center; padding: 4rem;">جاري تحميل المنتج...</div>
+      </section>
+
+      <!-- ORDER FORM -->
+      <section class="order-section" id="contact" aria-labelledby="order-section-title">
+        <div class="order-section__inner">
+          <div class="section-heading">
+            <p>اطلبي الآن</p>
+            <h2 id="order-section-title">أكّدي طلبك — الدفع عند الاستلام</h2>
+          </div>
+          <p class="section-lead">اسمك ورقم جوالك فقط — فريقنا يتواصل لتأكيد العنوان</p>
+
+          <form class="order-form" id="orderForm" novalidate>
+            <div class="order-form__row">
+              <div class="order-form__field">
+                <label class="order-form__label" for="orderName">الاسم</label>
+                <input
+                  class="order-form__input"
+                  type="text"
+                  id="orderName"
+                  name="name"
+                  placeholder="اسمك الكريم"
+                  required
+                  autocomplete="name"
+                />
+              </div>
+              <div class="order-form__field">
+                <label class="order-form__label" for="orderPhone">رقم الجوال</label>
+                <input
+                  class="order-form__input"
+                  type="tel"
+                  id="orderPhone"
+                  name="phone"
+                  placeholder="05xxxxxxxx"
+                  required
+                  autocomplete="tel"
+                  dir="ltr"
+                />
+              </div>
+            </div>
+
+            <div class="order-form__row" style="display: none;">
+              <div class="order-form__field">
+                <label class="order-form__label" for="orderProduct">المنتج</label>
+                <select class="order-form__select" id="orderProduct" name="product" required>
+                  <option value="">اختاري المنتج</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="order-form__row">
+              <div class="order-form__field" style="width: 100%;">
+                <label class="order-form__label" for="orderQty">الكمية</label>
+                <select class="order-form__select" id="orderQty" name="qty">
+                  <!-- Options will be populated by JS -->
+                </select>
+              </div>
+            </div>
+
+            <div class="order-form__price-row" id="orderPriceRow" aria-live="polite"></div>
+
+            <button type="submit" class="button button--primary order-form__submit" id="orderSubmitBtn">
+              أكّدي الطلب ←
+            </button>
+
+            <p class="order-form__trust">
+              <span>✓ الدفع عند الاستلام</span>
+              <span>✓ ضمان رضا 30 يوم</span>
+              <span>✓ شحن داخل المملكة</span>
+            </p>
+
+            <div class="order-form__feedback" id="orderFeedback" role="alert" aria-live="polite"></div>
+          </form>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer" id="footer">
+      <div class="site-footer__grid">
+        <div>
+          <p class="site-footer__brand"><span lang="en">NAJD</span> نجد</p>
+          <p class="site-footer__text">
+            خط كوزميتيك خارجي بوصف واضح على الغلاف — للوجه تحت الإيشارب والجو. مرخّص SFDA · حلال · GMP.
+          </p>
+        </div>
+      </div>
+      <p class="site-footer__copy">© 2026 متجر نجد — خط كوزميتيك سعودي. الحقوق محجوزة.</p>
+    </footer>
+
+    <script src="product.js" defer></script>
+  </body>
+</html>

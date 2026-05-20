@@ -238,11 +238,28 @@ function renderProducts(products) {
         offersWrap.append(row);
       });
 
-    /* ── Primary CTA button ── */
+    /* ── Action Buttons ── */
+    const actionsWrap = document.createElement("div");
+    actionsWrap.style.display = "flex";
+    actionsWrap.style.gap = "0.5rem";
+    
     const cta = document.createElement("a");
     cta.className = "button button--primary product-cta-primary";
     cta.href = "#contact";
     cta.innerHTML = "اطلبي الآن ←";
+    cta.style.flex = "2";
+
+    const detailsLink = document.createElement("a");
+    detailsLink.className = "button button--secondary";
+    detailsLink.href = `product.html?slug=${product.slug}`;
+    detailsLink.innerHTML = "التفاصيل";
+    detailsLink.style.flex = "1";
+    detailsLink.style.textAlign = "center";
+    detailsLink.style.border = "1px solid var(--primary)";
+    detailsLink.style.background = "transparent";
+    detailsLink.style.color = "var(--primary)";
+    
+    actionsWrap.append(cta, detailsLink);
 
     /* ── Trust strip ── */
     const trust = document.createElement("div");
@@ -269,7 +286,7 @@ function renderProducts(products) {
     body.prepend(desc);
     body.prepend(title);
     body.prepend(ratingRow);
-    body.append(cta);
+    body.append(actionsWrap);
     body.append(trust);
 
     /* ── Assemble card ── */
@@ -361,5 +378,292 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
   }
 })();
 
+/* ═══════════════════════════════════════════════════════
+   TRACKING — pixel init, helpers, order form
+   ═══════════════════════════════════════════════════════ */
+
+/* ─── Loaded products (populated by loadProducts API call) ─── */
+let _apiProducts = [];
+
+/* ─── Tiny helpers ─── */
+function _getCookie(name) {
+  const m = document.cookie.match(new RegExp("(?:^|; )" + name + "=([^;]*)"));
+  return m ? decodeURIComponent(m[1]) : undefined;
+}
+
+function _getUTM() {
+  const p = new URLSearchParams(window.location.search);
+  const obj = {
+    utm_source:   p.get("utm_source")   || undefined,
+    utm_medium:   p.get("utm_medium")   || undefined,
+    utm_campaign: p.get("utm_campaign") || undefined,
+    utm_content:  p.get("utm_content")  || undefined,
+    utm_term:     p.get("utm_term")     || undefined,
+  };
+  return Object.values(obj).some(Boolean) ? obj : undefined;
+}
+
+function _getClickIds() {
+  const p = new URLSearchParams(window.location.search);
+  const obj = {
+    fbclid:      p.get("fbclid")      || undefined,
+    ttclid:      p.get("ttclid")      || undefined,
+    sc_click_id: p.get("ScCid") || p.get("sc_click_id") || undefined,
+  };
+  return Object.values(obj).some(Boolean) ? obj : undefined;
+}
+
+function _genEventId() {
+  return "ev_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 9);
+}
+
+/* ─── Meta Pixel init ─── */
+function _initMeta(pixelId) {
+  /* eslint-disable */
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+  n.push=n;n.loaded=!0;n.version="2.0";n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+  document,"script","https://connect.facebook.net/en_US/fbevents.js");
+  /* eslint-enable */
+  window.fbq("init", pixelId);
+  window.fbq("track", "PageView");
+}
+
+/* ─── TikTok Pixel init ─── */
+function _initTikTok(pixelId) {
+  /* eslint-disable */
+  !function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];
+  ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];
+  ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};
+  for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
+  ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e};
+  ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";
+  ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,
+  ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");
+  o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;
+  var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
+  ttq.load(pixelId);ttq.page()}(window,document,"ttq");
+  /* eslint-enable */
+}
+
+/* ─── Snapchat Pixel init ─── */
+function _initSnap(pixelId) {
+  /* eslint-disable */
+  (function(e,t,n){if(e.snaptr)return;var a=e.snaptr=function(){
+  a.handleRequest?a.handleRequest.apply(a,arguments):a.queue.push(arguments)};
+  a.queue=[];var s="script",r=t.createElement(s);r.async=!0;
+  r.src=n;var u=t.getElementsByTagName(s)[0];u.parentNode.insertBefore(r,u);
+  })(window,document,"https://sc-static.net/scevent.min.js");
+  /* eslint-enable */
+  window.snaptr("init", pixelId, {});
+  window.snaptr("track", "PAGE_VIEW");
+}
+
+/* ─── Load config + initialise pixels ─── */
+async function loadConfig() {
+  try {
+    const res = await fetch("/config");
+    if (!res.ok) return;
+    const cfg = await res.json();
+    if (cfg.meta_pixel_id)    _initMeta(cfg.meta_pixel_id);
+    if (cfg.tiktok_pixel_id)  _initTikTok(cfg.tiktok_pixel_id);
+    if (cfg.snap_pixel_id)    _initSnap(cfg.snap_pixel_id);
+  } catch (_) {
+    // pixel init is best-effort — never block the storefront
+  }
+}
+
+/* ─── Fire ViewContent when a product card enters the viewport ─── */
+function _observeProductCards() {
+  if (!("IntersectionObserver" in window)) return;
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      const slug = entry.target.id;
+      const product = _apiProducts.find((p) => p.slug === slug);
+      if (!product) return;
+      const price = (product.offers[0] || {}).price_sar;
+      if (window.fbq)   window.fbq("track", "ViewContent", { content_ids: [product.id], content_type: "product", value: price, currency: "SAR" });
+      if (window.ttq)   window.ttq.track("ViewContent", { content_id: product.id, value: price, currency: "SAR" });
+      if (window.snaptr) window.snaptr("track", "VIEW_CONTENT", { item_ids: [product.id], price: price, currency: "SAR" });
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll(".product-card[id]").forEach((el) => observer.observe(el));
+}
+
+/* ─── Order form: populate product dropdown ─── */
+function _populateOrderSelect(products) {
+  const sel = document.getElementById("orderProduct");
+  if (!sel) return;
+  products.forEach((p) => {
+    const opt = document.createElement("option");
+    opt.value = p.id;
+    opt.textContent = p.name_ar;
+    sel.append(opt);
+  });
+}
+
+/* ─── Order form: update displayed price when product/qty changes ─── */
+function _updateOrderPrice() {
+  const productId = document.getElementById("orderProduct")?.value;
+  const qty = parseInt(document.getElementById("orderQty")?.value || "1", 10);
+  const row = document.getElementById("orderPriceRow");
+  if (!row) return;
+  if (!productId) { row.textContent = ""; return; }
+  const product = _apiProducts.find((p) => p.id === productId);
+  if (!product) { row.textContent = ""; return; }
+  const offer = product.offers.find((o) => o.quantity === qty);
+  row.textContent = offer ? `السعر: ${offer.price_sar} ر.س` : "";
+}
+
+/* ─── Order form: pre-select product from CTA click ─── */
+function _preselectProduct(slug) {
+  const product = _apiProducts.find((p) => p.slug === slug);
+  if (!product) return;
+  const sel = document.getElementById("orderProduct");
+  if (sel) { sel.value = product.id; _updateOrderPrice(); }
+}
+
+/* ─── Order form: wire change events ─── */
+function _initOrderFormListeners() {
+  document.getElementById("orderProduct")?.addEventListener("change", _updateOrderPrice);
+  document.getElementById("orderQty")?.addEventListener("change", _updateOrderPrice);
+
+  // Pre-select product when clicking any product CTA
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-order-product]");
+    if (btn) _preselectProduct(btn.dataset.orderProduct);
+  });
+
+  const form = document.getElementById("orderForm");
+  if (!form) return;
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    await _handleOrderSubmit(form);
+  });
+}
+
+/* ─── Order form: handle submission ─── */
+async function _handleOrderSubmit(form) {
+  const feedback = document.getElementById("orderFeedback");
+  const submitBtn = document.getElementById("orderSubmitBtn");
+
+  const name      = form.orderName?.value.trim();
+  const phone     = form.orderPhone?.value.trim();
+  const productId = form.orderProduct?.value;
+  const qty       = parseInt(form.orderQty?.value || "1", 10);
+
+  // Basic client-side validation
+  if (!name || name.length < 2) {
+    _showFeedback(feedback, "يرجى إدخال اسمك (حرفان على الأقل)", false);
+    form.orderName?.focus();
+    return;
+  }
+  if (!phone || !/^(05\d{8}|\+9665\d{8})$/.test(phone)) {
+    _showFeedback(feedback, "يرجى إدخال رقم جوال سعودي صحيح (مثال: 0512345678)", false);
+    form.orderPhone?.focus();
+    return;
+  }
+  if (!productId) {
+    _showFeedback(feedback, "يرجى اختيار منتج", false);
+    form.orderProduct?.focus();
+    return;
+  }
+
+  const product = _apiProducts.find((p) => p.id === productId);
+  const offer   = product?.offers.find((o) => o.quantity === qty);
+  if (!offer) {
+    _showFeedback(feedback, "حدث خطأ في بيانات المنتج — يرجى تحديث الصفحة", false);
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "جاري الإرسال...";
+  _showFeedback(feedback, "", null);
+
+  const purchaseEventId = _genEventId();
+  const clickIds        = _getClickIds();
+  const fbclid          = clickIds?.fbclid;
+
+  const payload = {
+    customer_name: name,
+    phone,
+    items: [{ product_id: productId, offer_qty: qty, price_sar: offer.price_sar }],
+    utm:       _getUTM(),
+    click_ids: clickIds,
+    browser: {
+      user_agent: navigator.userAgent,
+      fbp: _getCookie("_fbp"),
+      fbc: _getCookie("_fbc") || (fbclid ? "fb.1." + Date.now() + "." + fbclid : undefined),
+      ttp: _getCookie("_ttp"),
+    },
+    event_ids:   { purchase: purchaseEventId },
+    landing_page: window.location.href,
+    referrer:    document.referrer || undefined,
+  };
+
+  try {
+    const res = await fetch("/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || "حدث خطأ — يرجى المحاولة مرة أخرى");
+    }
+
+    const order = await res.json();
+
+    // Fire browser-side Purchase events (CAPI fires the same event server-side for deduplication)
+    const purchaseData = { value: offer.price_sar, currency: "SAR", content_ids: [productId], num_items: qty };
+    if (window.fbq)    window.fbq("track", "Purchase", purchaseData, { eventID: purchaseEventId });
+    if (window.ttq)    window.ttq.track("CompletePayment", { value: offer.price_sar, currency: "SAR", content_id: productId });
+    if (window.snaptr) window.snaptr("track", "PURCHASE", { price: offer.price_sar, currency: "SAR", transaction_id: order.order_id });
+
+    _showFeedback(
+      feedback,
+      `تم استلام طلبك ✓ — رقم الطلب: ${order.order_id}\nسيتواصل معك فريقنا لتأكيد العنوان قريباً.`,
+      true
+    );
+    form.reset();
+    _updateOrderPrice();
+
+  } catch (err) {
+    _showFeedback(feedback, err.message, false);
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "أكّدي الطلب ←";
+  }
+}
+
+function _showFeedback(el, msg, success) {
+  if (!el) return;
+  el.textContent = msg;
+  el.className = "order-form__feedback" + (success === true ? " order-form__feedback--success" : success === false ? " order-form__feedback--error" : "");
+}
+
+/* ─── Patch renderProducts to store API data + wire CTAs ─── */
+const _originalRenderProducts = renderProducts;
+renderProducts = function (products) {
+  _apiProducts = products; // store for order form + pixel events
+  _originalRenderProducts(products);
+  _populateOrderSelect(products);
+  _updateOrderPrice();
+  _observeProductCards();
+
+  // Add data-order-product attribute to every CTA so clicks pre-select the product
+  document.querySelectorAll(".product-cta-primary").forEach((btn) => {
+    const card = btn.closest(".product-card");
+    if (card?.id) btn.dataset.orderProduct = card.id;
+  });
+};
+
 /* ─── Boot ─── */
+_initOrderFormListeners();
 loadProducts();
+loadConfig();

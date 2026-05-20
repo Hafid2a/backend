@@ -13,6 +13,24 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="store.css" />
+
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1956891195007947');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1956891195007947&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
   </head>
   <body class="theme-najd">
 
@@ -241,7 +259,7 @@
               <span class="problem-card__solution-label">الحل في نجد</span>
               <strong class="problem-card__solution-name">ثبات الخط — برايمر الوجه</strong>
               <span class="problem-card__solution-note">يهيّئ البشرة ويثبّت الأساس ساعات أطول</span>
-              <a href="#face-primer" class="problem-card__solution-link">اطّلعي على ثبات الخط ←</a>
+              <a href="product.html?slug=face-primer" class="problem-card__solution-link">اطّلعي على ثبات الخط ←</a>
             </div>
           </article>
 
@@ -256,7 +274,7 @@
               <span class="problem-card__solution-label">الحل في نجد</span>
               <strong class="problem-card__solution-name">درع النهار — SPF 50</strong>
               <span class="problem-card__solution-note">ملمس خفيف لا يبيّض · مناسب تحت الفونداشن</span>
-              <a href="#face-sunscreen-spf50" class="problem-card__solution-link">اطّلعي على درع النهار ←</a>
+              <a href="product.html?slug=face-sunscreen-spf50" class="problem-card__solution-link">اطّلعي على درع النهار ←</a>
             </div>
           </article>
 
@@ -271,7 +289,7 @@
               <span class="problem-card__solution-label">الحل في نجد</span>
               <strong class="problem-card__solution-name">صفاء الجبهة — سيروم موضّع</strong>
               <span class="problem-card__solution-note">يهيّئ الملمس ويلطّف الخشونة والحبوب الزغيرة</span>
-              <a href="#forehead-serum" class="problem-card__solution-link">اطّلعي على صفاء الجبهة ←</a>
+              <a href="product.html?slug=forehead-serum" class="problem-card__solution-link">اطّلعي على صفاء الجبهة ←</a>
             </div>
           </article>
 
@@ -333,7 +351,7 @@
                 <p class="science-ingredient__note">مضاد أكسدة يحمي البشرة من تأثير الأشعة والتلوث اليومي</p>
               </div>
             </div>
-            <a href="#face-sunscreen-spf50" class="science-card__link">اطّلعي على درع النهار ←</a>
+            <a href="product.html?slug=face-sunscreen-spf50" class="science-card__link">اطّلعي على درع النهار ←</a>
           </article>
 
           <article class="science-card">
@@ -367,7 +385,7 @@
                 <p class="science-ingredient__note">يحافظ على رطوبة البشرة أثناء التثبيت — بدون جفاف أو احمرار</p>
               </div>
             </div>
-            <a href="#face-primer" class="science-card__link">اطّلعي على ثبات الخط ←</a>
+            <a href="product.html?slug=face-primer" class="science-card__link">اطّلعي على ثبات الخط ←</a>
           </article>
 
           <article class="science-card">
@@ -401,7 +419,7 @@
                 <p class="science-ingredient__note">تهدئة وتقليل الالتهاب الخفيف — مناسبة لبشرة الجبهة الحساسة تحت الإيشارب</p>
               </div>
             </div>
-            <a href="#forehead-serum" class="science-card__link">اطّلعي على صفاء الجبهة ←</a>
+            <a href="product.html?slug=forehead-serum" class="science-card__link">اطّلعي على صفاء الجبهة ←</a>
           </article>
 
         </div>
@@ -691,9 +709,83 @@
     </main>
 
     <!-- ═══════════════════════════════════════════════════
+         SECTION 12 — ORDER FORM
+    ═══════════════════════════════════════════════════ -->
+    <section class="order-section" id="contact" aria-labelledby="order-section-title">
+      <div class="order-section__inner">
+        <div class="section-heading">
+          <p>اطلبي الآن</p>
+          <h2 id="order-section-title">أكّدي طلبك — الدفع عند الاستلام</h2>
+        </div>
+        <p class="section-lead">اسمك ورقم جوالك فقط — فريقنا يتواصل لتأكيد العنوان</p>
+
+        <form class="order-form" id="orderForm" novalidate>
+          <div class="order-form__row">
+            <div class="order-form__field">
+              <label class="order-form__label" for="orderName">الاسم</label>
+              <input
+                class="order-form__input"
+                type="text"
+                id="orderName"
+                name="name"
+                placeholder="اسمك الكريم"
+                required
+                autocomplete="name"
+              />
+            </div>
+            <div class="order-form__field">
+              <label class="order-form__label" for="orderPhone">رقم الجوال</label>
+              <input
+                class="order-form__input"
+                type="tel"
+                id="orderPhone"
+                name="phone"
+                placeholder="05xxxxxxxx"
+                required
+                autocomplete="tel"
+                dir="ltr"
+              />
+            </div>
+          </div>
+
+          <div class="order-form__row">
+            <div class="order-form__field">
+              <label class="order-form__label" for="orderProduct">المنتج</label>
+              <select class="order-form__select" id="orderProduct" name="product" required>
+                <option value="">اختاري المنتج</option>
+              </select>
+            </div>
+            <div class="order-form__field">
+              <label class="order-form__label" for="orderQty">الكمية</label>
+              <select class="order-form__select" id="orderQty" name="qty">
+                <option value="1">عبوّة واحدة</option>
+                <option value="2" selected>عبوتين — الأكثر اختياراً</option>
+                <option value="3">ثلاث عبوات — أفضل قيمة</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="order-form__price-row" id="orderPriceRow" aria-live="polite"></div>
+
+          <button type="submit" class="button button--primary order-form__submit" id="orderSubmitBtn">
+            أكّدي الطلب ←
+          </button>
+
+          <p class="order-form__trust">
+            <span>✓ الدفع عند الاستلام</span>
+            <span>✓ ضمان رضا 30 يوم</span>
+            <span>✓ شحن داخل المملكة</span>
+          </p>
+
+          <div class="order-form__feedback" id="orderFeedback" role="alert" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
          FOOTER
     ═══════════════════════════════════════════════════ -->
-    <footer class="site-footer" id="contact">
+    <footer class="site-footer" id="footer">
       <div class="site-footer__grid">
         <div>
           <p class="site-footer__brand"><span lang="en">NAJD</span> نجد</p>
@@ -704,9 +796,9 @@
         <div>
           <p class="site-footer__head">منتجات</p>
           <ul class="site-footer__links">
-            <li><a href="#face-primer">ثبات الخط</a></li>
-            <li><a href="#face-sunscreen-spf50">درع النهار</a></li>
-            <li><a href="#forehead-serum">صفاء الجبهة</a></li>
+            <li><a href="product.html?slug=face-primer">ثبات الخط</a></li>
+            <li><a href="product.html?slug=face-sunscreen-spf50">درع النهار</a></li>
+            <li><a href="product.html?slug=forehead-serum">صفاء الجبهة</a></li>
             <li><a href="#products">كل المنتجات</a></li>
           </ul>
         </div>
