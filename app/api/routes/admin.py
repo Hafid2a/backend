@@ -73,11 +73,13 @@ async def admin_overview(
         db,
         """
         WITH click_stats AS (
-            SELECT count(*)::int AS clicks
+            SELECT
+                count(*)::int AS total_clicks,
+                count(*) FILTER (WHERE is_valid_ksa_ip)::int AS clicks,
+                count(*) FILTER (WHERE NOT is_valid_ksa_ip)::int AS rejected_clicks
             FROM click_events
             WHERE created_at >= :start
               AND created_at < :end
-              AND is_valid_ksa_ip = true
         ),
         order_stats AS (
             SELECT
@@ -105,6 +107,8 @@ async def admin_overview(
     )
     summary = summary_rows[0] if summary_rows else {}
     clicks = int(summary.get("clicks") or 0)
+    total_clicks = int(summary.get("total_clicks") or 0)
+    rejected_clicks = int(summary.get("rejected_clicks") or 0)
     orders = int(summary.get("orders") or 0)
     summary["conversion_rate"] = round((orders / clicks) * 100, 2) if clicks else 0
     summary["upsell_rate"] = (
@@ -113,6 +117,9 @@ async def admin_overview(
         else 0
     )
     summary["avg_order_value_sar"] = float(summary.get("avg_order_value_sar") or 0)
+    summary["rejection_rate"] = (
+        round((rejected_clicks / total_clicks) * 100, 2) if total_clicks else 0
+    )
 
     daily = await _fetch_mappings(
         db,
@@ -220,12 +227,49 @@ async def admin_overview(
             round((row["orders"] / row["clicks"]) * 100, 2) if row["clicks"] else 0
         )
 
+    rejection_reasons = await _fetch_mappings(
+        db,
+        """
+        SELECT
+            coalesce(nullif(ip_reject_reason, ''), 'unknown') AS reason,
+            coalesce(nullif(ip_check_provider, ''), 'unknown') AS provider,
+            count(*)::int AS count
+        FROM click_events
+        WHERE created_at >= :start
+          AND created_at < :end
+          AND is_valid_ksa_ip = false
+        GROUP BY 1, 2
+        ORDER BY count DESC
+        LIMIT 20
+        """,
+        params,
+    )
+
+    rejection_countries = await _fetch_mappings(
+        db,
+        """
+        SELECT
+            coalesce(nullif(country_code, ''), 'unknown') AS country_code,
+            count(*)::int AS count
+        FROM click_events
+        WHERE created_at >= :start
+          AND created_at < :end
+          AND is_valid_ksa_ip = false
+        GROUP BY 1
+        ORDER BY count DESC
+        LIMIT 20
+        """,
+        params,
+    )
+
     return {
         "summary": summary,
         "daily": daily,
         "status_counts": status_counts,
         "products": products,
         "sources": sources,
+        "rejection_reasons": rejection_reasons,
+        "rejection_countries": rejection_countries,
     }
 
 
@@ -387,7 +431,7 @@ ADMIN_HTML = r"""
     .tabs { display:flex; gap:10px; margin:18px 0; }
     .tab { background:#0b1220; color:var(--muted); border:1px solid var(--line); }
     .tab.active { background:var(--brand); color:#111827; }
-    .grid { display:grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap:14px; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:14px; }
     .card { background:rgba(17,24,39,.86); border:1px solid var(--line); border-radius:22px; padding:18px; box-shadow:0 18px 40px rgba(0,0,0,.22); }
     .metric .label { color:var(--muted); font-size:13px; }
     .metric .value { font-size:28px; font-weight:800; margin-top:6px; letter-spacing:-0.03em; }
@@ -440,6 +484,17 @@ ADMIN_HTML = r"""
         <div class="card">
           <h3>Status Mix</h3>
           <div id="statuses"></div>
+        </div>
+      </div>
+      <div class="two section">
+        <div class="card">
+          <h3>Click Rejections <span class="sub" style="font-weight:400">(why is_valid_ksa_ip = false)</span></h3>
+          <table><thead><tr><th>Reason</th><th>Provider</th><th>Count</th></tr></thead><tbody id="rejectionReasons"></tbody></table>
+          <p class="sub" id="rejectionsHint" style="margin-top:10px"></p>
+        </div>
+        <div class="card">
+          <h3>Rejected by Country</h3>
+          <table><thead><tr><th>Country</th><th>Count</th></tr></thead><tbody id="rejectionCountries"></tbody></table>
         </div>
       </div>
       <div class="two section">
@@ -497,8 +552,12 @@ ADMIN_HTML = r"""
       const res = await fetch(`/admin/api/overview?${dates()}`);
       const data = await res.json();
       const s = data.summary || {};
+      const totalClicks = s.total_clicks || 0;
+      const rejectedClicks = s.rejected_clicks || 0;
+      const validClass = totalClicks && !s.clicks ? 'bad' : 'blue';
       byId('metrics').innerHTML = [
-        ['Valid KSA Clicks', fmt.format(s.clicks || 0), 'blue'],
+        ['Valid KSA Clicks', `${fmt.format(s.clicks || 0)} / ${fmt.format(totalClicks)}`, validClass],
+        ['Rejected Clicks', `${fmt.format(rejectedClicks)} (${s.rejection_rate || 0}%)`, rejectedClicks ? 'bad' : 'blue'],
         ['Orders', fmt.format(s.orders || 0), 'ok'],
         ['Conversion Rate', `${s.conversion_rate || 0}%`, 'ok'],
         ['Revenue', sar(s.revenue_sar), 'ok'],
@@ -509,6 +568,29 @@ ADMIN_HTML = r"""
       byId('statuses').innerHTML = data.status_counts.map(r => `<div class="line"><span>${esc(r.status)}</span><b>${r.count}</b></div><div class="bar"><span style="width:${(r.count / maxStatus) * 100}%"></span></div>`).join('') || '<p class="sub">No orders in this period.</p>';
       byId('products').innerHTML = data.products.map(r => `<tr><td>${esc(r.product_name_ar)}<br><span class="sub">${esc(r.product_slug)}</span></td><td>${r.units}</td><td>${r.orders}</td><td>${sar(r.revenue_sar)}</td></tr>`).join('');
       byId('sources').innerHTML = data.sources.map(r => `<tr><td>${esc(r.source)}</td><td>${r.clicks}</td><td>${r.orders}</td><td>${r.conversion_rate}%</td></tr>`).join('');
+      const reasons = data.rejection_reasons || [];
+      byId('rejectionReasons').innerHTML = reasons.length
+        ? reasons.map(r => `<tr><td><code>${esc(r.reason)}</code></td><td><span class="sub">${esc(r.provider)}</span></td><td>${fmt.format(r.count)}</td></tr>`).join('')
+        : '<tr><td colspan="3" class="sub">No rejected clicks in this period.</td></tr>';
+      const topReason = reasons[0]?.reason || '';
+      const hints = {
+        maxmind_credentials_missing: 'MaxMind env vars (MAXMIND_ACCOUNT_ID / MAXMIND_LICENSE_KEY) missing in backend — all clicks get rejected.',
+        non_sa_country: 'Ads are sending traffic from outside Saudi Arabia.',
+        non_public_ip: 'Backend sees private/loopback IPs — reverse proxy is not forwarding X-Forwarded-For.',
+        missing_ip: 'Backend received no client IP — reverse proxy / Traefik headers missing.',
+        anonymous_vpn: 'Visitors connecting through VPNs.',
+        anonymizer_vpn: 'Visitors connecting through VPNs (MaxMind anonymizer flag).',
+        hosting_provider: 'Visitors on datacenter / hosting IPs — toggle MAXMIND_BLOCK_HOSTING_PROVIDER=false if too aggressive.',
+        anonymizer_hosting_provider: 'Datacenter / hosting IPs flagged by MaxMind anonymizer.',
+        maxmind_404: 'MaxMind has no record for those IPs.',
+        maxmind_auth_rejected: 'MaxMind credentials are wrong / expired.',
+        maxmind_request_failed: 'Backend cannot reach MaxMind (network / outbound firewall).',
+      };
+      byId('rejectionsHint').textContent = topReason && hints[topReason] ? `Top reason: ${hints[topReason]}` : '';
+      const countries = data.rejection_countries || [];
+      byId('rejectionCountries').innerHTML = countries.length
+        ? countries.map(r => `<tr><td>${esc(r.country_code)}</td><td>${fmt.format(r.count)}</td></tr>`).join('')
+        : '<tr><td colspan="2" class="sub">No rejected clicks in this period.</td></tr>';
     }
     async function loadOrders() {
       const p = dates();
